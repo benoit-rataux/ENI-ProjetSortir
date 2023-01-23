@@ -167,6 +167,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
         return $this;
     }
     
+    public function getMotPasse(): string {
+        return $this->motPasse;
+    }
+    
+    public function setMotPasse(string $motPasse): self {
+        $this->motPasse = $motPasse;
+        
+        return $this;
+    }
+    
     public function getNom(): ?string {
         return $this->nom;
     }
