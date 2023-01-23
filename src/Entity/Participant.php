@@ -12,7 +12,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ParticipantRepository::class)]
-#[UniqueEntity('nom, prenom')]
+#[UniqueEntity('pseudo')]
+#[UniqueEntity(fields: ['mail'], message: 'There is already an account with this mail')]
 class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -89,6 +90,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
     
     #[ORM\OneToMany(mappedBy: 'organisateur', targetEntity: Sortie::class)]
     private Collection $sortiesOrganisees;
+    
+    #[ORM\Column(length: 25)]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        min: 3,
+        max: 25,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut excéder {{ limit }} caractères',
+    )]
+    private ?string $pseudo = null;
     
     public function __construct() {
         $this->sortiesEstInscrit = new ArrayCollection();
@@ -260,6 +271,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
                 $sortiesOrganisee->setOrganisateur(null);
             }
         }
+        
+        return $this;
+    }
+    
+    public function getPseudo(): ?string {
+        return $this->pseudo;
+    }
+    
+    public function setPseudo(string $pseudo): self {
+        $this->pseudo = $pseudo;
         
         return $this;
     }
