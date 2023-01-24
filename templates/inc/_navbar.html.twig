@@ -1,6 +1,6 @@
 <nav>
     <ul>
         <li><a href={{ path('app_main_home') }}>acceuil</a></li>
-        <li><a href="{{ path('app_participant_profil', {'id': app.user.id}) }}">mon profil</a></li>
+        <li><a href="{{ path('app_profil_monprofil') }}">mon profil {{ app.user.pseudo }}</a></li>
     </ul>
 </nav>

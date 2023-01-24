@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ parent() }} - profil{% endblock %}
+
+{% block body %}
+    <div class="profil-photo-container">
+        <img src="{{ asset('resources/images/profil/_default.png') }}" alt="photo profil">
+    </div>
+    
+    <div class="profil-form-container">
+        {{ form_start(profilForm) }}
+        {{ form_widget(profilForm) }}
+        <button>Modifier</button>
+        {{ form_end(profilForm) }}
+    </div>
+{% endblock %}
