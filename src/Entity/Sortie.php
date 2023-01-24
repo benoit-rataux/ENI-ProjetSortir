@@ -47,15 +47,19 @@ class Sortie {
     private ?string $infosSortie = null;
     
     #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Etat $etat = null;
     
     #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Lieu $lieu = null;
     
     #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Campus $campus = null;
     
     #[ORM\ManyToMany(targetEntity: Participant::class, mappedBy: 'sortiesEstInscrit')]
+    #[ORM\JoinColumn(nullable: false)]
     private Collection $participants;
     
     #[ORM\ManyToOne(inversedBy: 'sortiesOrganisees')]

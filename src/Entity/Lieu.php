@@ -45,6 +45,7 @@ class Lieu {
     private Collection $sorties;
     
     #[ORM\ManyToOne(inversedBy: 'lieux')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Ville $ville = null;
     
     public function __construct() {

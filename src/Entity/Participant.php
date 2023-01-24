@@ -31,9 +31,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
     )]
     private ?string $mail = null;
     
-    #[ORM\Column]
-    private array $roles = [];
-    
     /**
      * @var string The hashed password
      */
@@ -90,7 +87,10 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
     #[ORM\OneToMany(mappedBy: 'organisateur', targetEntity: Sortie::class)]
     private Collection $sortiesOrganisees;
     
-    #[ORM\Column(length: 25)]
+    #[ORM\Column(
+        length: 25,
+        unique: true,
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         min: 3,
@@ -132,17 +132,7 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
      * @see UserInterface
      */
     public function getRoles(): array {
-        $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
-        
-        return array_unique($roles);
-    }
-    
-    public function setRoles(array $roles): self {
-        $this->roles = $roles;
-        
-        return $this;
+        return $this->administrateur ? ['ROLE_ADMIN'] : ['ROLE_USER'];
     }
     
     /**
@@ -158,12 +148,6 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
      */
     public function getPassword(): string {
         return $this->motPasse;
-    }
-    
-    public function setPassword(string $motPasse): self {
-        $this->motPasse = $motPasse;
-        
-        return $this;
     }
     
     public function getMotPasse(): string {

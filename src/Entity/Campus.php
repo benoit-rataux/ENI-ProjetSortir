@@ -6,20 +6,25 @@ use App\Repository\CampusRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CampusRepository::class)]
+#[UniqueEntity(fields: ['nom'])]
 class Campus {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
     
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(
+        length: 180,
+        unique: true,
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         min: 3,
-        max: 255,
+        max: 180,
         minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
         maxMessage: 'Le nom ne peut excéder {{ limit }} caractères',
     )]
