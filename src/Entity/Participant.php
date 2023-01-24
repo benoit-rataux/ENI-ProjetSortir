@@ -38,18 +38,17 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
      * @var string The hashed password
      */
     #[ORM\Column]
-    #[Assert\NotBlank]
     #[Assert\Length(
         min: 8,
         max: 50,
         minMessage: 'Le mot de passe doit contenir au moins 8 caractères',
         maxMessage: 'Le mot de passe ne peut excéder 50 caractères',
-    )]
+    )]/**/
     #[Assert\Regex(
         pattern: '/^(?=.*[0-9])(?=.*[a-zA-Z])([a-zA-Z0-9]+)$/',
         message: 'Le mot de passe doit contenir au moins une minuscule, une majuscule et un chiffre',
         match: true,
-    )]
+    )]/**/
     private ?string $motPasse = null;
     
     #[ORM\Column(length: 50)]

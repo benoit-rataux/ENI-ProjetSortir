@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}ENI Sorties!{% endblock %}</title>
@@ -18,6 +18,15 @@
     <header>
         {% block header %}{% endblock %}
     </header>
+    
+    {# read and display all flash messages #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="flash flash-{{ label }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
     
     <main>
         {% block body %}{% endblock %}
