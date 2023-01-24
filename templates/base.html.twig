@@ -16,7 +16,12 @@
 </head>
 <body>
     <header>
-        {% block header %}{% endblock %}
+        {% block header %}
+            <div>
+                <h1 class="text-3xl font-bold">ENI Sorties!</h1>
+            </div>
+            {{ include('inc/_navbar.html.twig') }}
+        {% endblock %}
     </header>
     
     {# read and display all flash messages #}
