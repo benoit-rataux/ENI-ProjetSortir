@@ -27,12 +27,17 @@ class Sortie {
     private ?string $nom = null;
     
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
+    #[Assert\DateTime]
+    #[Assert\GreaterThan('today')]
     private ?\DateTimeInterface $dateHeureDebut = null;
     
     #[ORM\Column]
+    #[Assert\Positive]
     private ?int $duree = null;
     
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\DateTime]
+    #[Assert\GreaterThan(propertyPath: 'dateHeureDebut')]
     private ?\DateTimeInterface $dateLimiteInscription = null;
     
     #[ORM\Column]
