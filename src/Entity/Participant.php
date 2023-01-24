@@ -62,10 +62,10 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
     #[Assert\NotBlank]
     private ?string $prenom = null;
     
-    #[ORM\Column(length: 10, nullable: true)]
+    #[ORM\Column(length: 20, nullable: true)]
     #[Assert\NotBlank]
     #[Assert\Regex(
-        pattern: '/^\d{10}$/',
+        pattern: '/^\d{10}$/', //TODO: améliorer la regex pour internationnal
         message: 'Le numéros de téléphone doit contnir 10 chiffres',
         match: true,
     )]
