@@ -14,7 +14,7 @@ class ProfilType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
             ->add('pseudo', TextType::class, [
-                'disabled' => false, //@TODO: demander au prof changement du pseudo
+                'disabled' => true, //@TODO: vérifier l'unicité et autoriser le changement du pseudo
             ])
             ->add('prenom')
             ->add('nom')
@@ -25,24 +25,7 @@ class ProfilType extends AbstractType {
                 'choice_label' => 'nom',
                 'expanded'     => false,
                 'disabled'     => true,
-            ])/*
-            ->add('motPasse', RepeatedType::class, [
-                'type'            => PasswordType::class,
-                'invalid_message' => 'Les mots de passe doivent correspondre',
-                'required'        => true,
-                'options'         => [
-                    'attr' => ['class' => 'password-field']
-                ],
-                'first_options'   => [
-                    'label' => 'Mot de passe',
-                ],
-                'second_options'  => [
-                    'label' => 'confirmation',
-                ],
             ])
-            ->add('sortiesEstInscrit')
-            ->add('administrateur')
-            ->add('actif')*/
         ;
     }
     

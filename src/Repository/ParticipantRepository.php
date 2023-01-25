@@ -5,9 +5,11 @@ namespace App\Repository;
 use App\Entity\Participant;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @extends ServiceEntityRepository<Participant>
@@ -17,43 +19,38 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method Participant[]    findAll()
  * @method Participant[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ParticipantRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
-{
-    public function __construct(ManagerRegistry $registry)
-    {
+class ParticipantRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface {
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Participant::class);
     }
-
-    public function save(Participant $entity, bool $flush = false): void
-    {
-        $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
-            $this->getEntityManager()->flush();
-        }
-    }
-
-    public function remove(Participant $entity, bool $flush = false): void
-    {
+    
+    public function remove(Participant $entity, bool $flush = false): void {
         $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
+        
+        if($flush) {
             $this->getEntityManager()->flush();
         }
     }
-
+    
     /**
      * Used to upgrade (rehash) the user's password automatically over time.
      */
-    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void
-    {
-        if (!$user instanceof Participant) {
+    public function upgradePassword(PasswordAuthenticatedUserInterface $user, string $newHashedPassword): void {
+        if(!$user instanceof Participant) {
             throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($user)));
         }
-
+        
         $user->setPassword($newHashedPassword);
-
+        
         $this->save($user, true);
+    }
+    
+    public function save(Participant $entity, bool $flush = false): void {
+        $this->getEntityManager()->persist($entity);
+        
+        if($flush) {
+            $this->getEntityManager()->flush();
+        }
     }
 
 //    /**
@@ -80,4 +77,28 @@ class ParticipantRepository extends ServiceEntityRepository implements PasswordU
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    
+    public function loadUserByIdentifier(string $identifier): ?UserInterface {
+        return $this
+            ->createQueryBuilder('participant')
+            ->orWhere('participant.pseudo = :identifiant')
+            ->orWhere('participant.mail = :identifiant')
+            ->setParameter('identifiant', $identifier)
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+//        $entityManager = $this->getEntityManager();
+//
+//        return $entityManager
+//            ->createQuery(
+//                'SELECT user
+//                    FROM App\Entity\Participant user
+//                    WHERE   user.pseudo = :identifier
+//                    OR      user.mail = :identifier'
+//            )
+//            ->setParameter('identifier', $identifier)
+//            ->getOneOrNullResult()
+//        ;
+    }
 }
