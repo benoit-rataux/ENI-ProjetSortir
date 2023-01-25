@@ -14,7 +14,7 @@ class ProfilType extends AbstractType {
     public function buildForm(FormBuilderInterface $builder, array $options): void {
         $builder
             ->add('pseudo', TextType::class, [
-                'disabled' => true, //@TODO: vérifier l'unicité et autoriser le changement du pseudo
+                'disabled' => false,
             ])
             ->add('prenom')
             ->add('nom')

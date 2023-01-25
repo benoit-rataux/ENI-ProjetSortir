@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Participant;
 use App\Form\MotDePasseType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
@@ -23,9 +24,11 @@ class ProfilController extends AbstractController {
         ParticipantRepository       $participantRepository,
         UserPasswordHasherInterface $userPasswordHasher,
     ): Response {
-        $participant = $participantRepository->find(
-            $user->getId()
-        ); //@TODO: demander au prof si on ne peut pas cast $user à la place
+//        $participant = $participantRepository->find(
+//            $user->getId()
+//        );
+        /** @var Participant $participant */
+        $participant = $user;
         
         $profileForm = $this->createForm(ProfilType::class, $participant);
         $profileForm->handleRequest($request);
@@ -34,8 +37,17 @@ class ProfilController extends AbstractController {
         $motDePasseForm->handleRequest($request);
         
         if($profileForm->isSubmitted() && $profileForm->isValid()) {
+            // vérification de l'unicité du pseudo
+            $pseudoInput = $profileForm->get('pseudo')->getData();
+            if(
+                $participant->getPseudo() !== $pseudoInput &&
+                $participantRepository->findOneBy(['pseudo' => $pseudoInput])
+            ) {
+                $this->addFlash('error', 'Ce pseudo est déjà pris #padbol');
+                return $this->redirectToRoute('app_profil_monprofil');
+            }
+            
             // sauvegarde des nouvelles données
-            //@TODO: trouver comment ne pas mettre à NULL les champs vides
             $entityManager->persist($participant);
             $entityManager->flush();
             
@@ -48,7 +60,7 @@ class ProfilController extends AbstractController {
             $participant->setMotPasse(
                 $userPasswordHasher->hashPassword(
                     $participant,
-                    $profileForm->get('motPasse')->getData(),
+                    $motDePasseForm->get('motPasse')->getData(),
                 )
             );
         }
