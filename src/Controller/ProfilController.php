@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\MotDePasseType;
 use App\Form\ProfilType;
 use App\Repository\ParticipantRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,15 +30,10 @@ class ProfilController extends AbstractController {
         $profileForm = $this->createForm(ProfilType::class, $participant);
         $profileForm->handleRequest($request);
         
+        $motDePasseForm = $this->createForm(MotDePasseType::class, $participant);
+        $motDePasseForm->handleRequest($request);
+        
         if($profileForm->isSubmitted() && $profileForm->isValid()) {
-            // hashage du mot de passe
-            $participant->setMotPasse(
-                $userPasswordHasher->hashPassword(
-                    $participant,
-                    $profileForm->get('motPasse')->getData(),
-                )
-            );
-            
             // sauvegarde des nouvelles données
             //@TODO: trouver comment ne pas mettre à NULL les champs vides
             $entityManager->persist($participant);
@@ -47,8 +43,19 @@ class ProfilController extends AbstractController {
             return $this->redirectToRoute('app_main_home');
         }
         
+        if($motDePasseForm->isSubmitted() && $motDePasseForm->isValid()) {
+            // hashage du mot de passe
+            $participant->setMotPasse(
+                $userPasswordHasher->hashPassword(
+                    $participant,
+                    $profileForm->get('motPasse')->getData(),
+                )
+            );
+        }
+        
         return $this->render('participant/profil.html.twig', [
-            'profilForm' => $profileForm->createView(),
+            'profilForm'     => $profileForm->createView(),
+            'motDePasseForm' => $motDePasseForm->createView(),
         ]);
     }
 }

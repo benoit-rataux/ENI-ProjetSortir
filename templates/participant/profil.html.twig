@@ -13,4 +13,11 @@
         <button>Modifier</button>
         {{ form_end(profilForm) }}
     </div>
+    
+    <div class="motpasse-form-container">
+        {{ form_start(motDePasseForm) }}
+        {{ form_widget(motDePasseForm) }}
+        <button>Changer de mot de passe!</button>
+        {{ form_end(motDePasseForm) }}
+    </div>
 {% endblock %}
