@@ -1,6 +1,6 @@
 framework:
   workflows:
-    sortie_workflow:
+    sortie:
       type: 'state_machine'
       audit_trail:
         enabled: true
