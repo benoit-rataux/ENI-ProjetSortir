@@ -17,10 +17,11 @@
     {% endblock %}
 </head>
 <body class="container-fluid" style="height: 90vh !important;">
-    <header>
+    <header class="flex flex-row justify-between bg-[#" >
         {% block header %}
-            <div>
-                <h1 class="text-3xl font-bold">ENI Sorties!</h1>
+            <div class="flex">
+                <a href="{{ path('app_main_home') }}"><img src="{{ asset('/resources/images/logo.png') }}" class="h-[50px]" alt="Eni-Sortie"></a>
+                <h1 class="text-3xl font-bold mx-2">ENI Sorties!</h1>
             </div>
             {{ include('inc/_navbar.html.twig') }}
         {% endblock %}
