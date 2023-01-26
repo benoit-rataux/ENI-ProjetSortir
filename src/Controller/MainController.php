@@ -10,8 +10,6 @@ use Symfony\Component\Routing\Annotation\Route;
 class MainController extends AbstractController {
     #[Route('', name: 'home', methods: ['GET'])]
     public function home(): Response {
-        return $this->render('main/index.html.twig', [
-            'controller_name' => 'MainController',
-        ]);
+        return $this->redirectToRoute('app_sortie_liste');
     }
 }
