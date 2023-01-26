@@ -12,7 +12,8 @@ use Faker\Factory;
 class LieuxFixtures extends Fixture implements DependentFixtureInterface {
     public const RNG_LIEUX_COUNT_MIN = 1;
     public const RNG_LIEUX_COUNT_MAX = 10;
-    public const RNG_LIEUX           = 'rngLieu_';
+    
+    public const REF_LABEL = 'Lieu_';
     
     public function load(ObjectManager $manager): void {
         
@@ -42,9 +43,13 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface {
         
         for($villeIndex = 0; $villeIndex < VillesFixtures::RNG_VILLES_COUNT; $villeIndex++) {
             /** @var Ville $ville */
-            $ville = $this->getReference(VillesFixtures::RNG_VILLES . $villeIndex);
+            $ville = $this->getReference(VillesFixtures::REF_LABEL . $villeIndex);
             
-            for($lieuIndex = 0; $lieuIndex < random_int(self::RNG_LIEUX_COUNT_MIN, self::RNG_LIEUX_COUNT_MAX); $lieuIndex++) {
+            // nombre de lieux par villes
+            $lieuxCount = random_int(self::RNG_LIEUX_COUNT_MIN, self::RNG_LIEUX_COUNT_MAX);
+            //$this->addReference(VillesFixtures::REF_LABEL . $villeIndex . '_lieux_count', $lieuxCount);
+            
+            for($lieuIndex = 0; $lieuIndex < $lieuxCount; $lieuIndex++) {
                 $wordsCount = random_int(1, 5);
                 
                 $lieu = (new Lieu())
@@ -53,6 +58,7 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface {
                     ->setVille($ville)
                 ;
                 $manager->persist($lieu);
+                $this->addReference(self::REF_LABEL . $villeIndex . '_' . $lieuIndex, $lieu);
             }
         }
         

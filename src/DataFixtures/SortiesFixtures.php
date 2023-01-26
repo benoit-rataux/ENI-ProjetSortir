@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Entity\Ville;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -26,9 +27,9 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
         $etatsMaxIndex = count($etats) - 1;
         
         $campus         = [
-            $this->getReference('campus_podlar'),
-            $this->getReference('campus_ocean'),
-            $this->getReference('campus_lespace'),
+            $this->getReference(CampusFixtures::REF_PREFIX . 'podlar'),
+            $this->getReference(CampusFixtures::REF_PREFIX . 'ocean'),
+            $this->getReference(CampusFixtures::REF_PREFIX . 'lespace'),
         ];
         $campusMaxIndex = count($campus) - 1;
         
@@ -40,16 +41,24 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
         ];
         $organisateursMaxIndex = count($organisateurs) - 1;
         
-        for($i = 0; $i < VillesFixtures::RNG_VILLES_COUNT; $i++) {
+        for($villeIndex = 0; $villeIndex < VillesFixtures::RNG_VILLES_COUNT; $villeIndex++) {
             /** @var Ville $ville */
-            $ville         = $this->getReference(VillesFixtures::RNG_VILLES . $i);
-            $lieuxMaxIndex = count($ville->getLieux());
+            $ville = $this->getReference(VillesFixtures::REF_LABEL . $villeIndex);
+            /** @var int $lieuxMaxIndex */
+//            $lieuxMaxIndex = $this->getReference(VillesFixtures::REF_LABEL . $villeIndex . 'lieux_count' . $sortieIndex);
+//            printf($ville->getLieux()[0]->getNom());
             
-            for($j = 0; $j < random_int(self::RNG_SORTIES_COUNT_MIN, self::RNG_SORTIES_COUNT_MAX); $j++) {
+            for($sortieIndex = 0; $sortieIndex < random_int(self::RNG_SORTIES_COUNT_MIN, self::RNG_SORTIES_COUNT_MAX); $sortieIndex++) {
                 $sortie = new Sortie();
+
+//                $lieuIndex = random_int(0, $lieuxMaxIndex);
+                $lieuIndex = 0;
+                /** @var Lieu $lieu */
+                $lieu = $this->getReference(LieuxFixtures::REF_LABEL . $villeIndex . '_' . $lieuIndex);
+                
                 $sortie
                     ->setEtat($etats[random_int(0, $etatsMaxIndex)])
-                    ->setLieu($ville->getLieux()[random_int(0, $lieuxMaxIndex)])
+                    ->setLieu($lieu)
                     ->setCampus($campus[random_int(0, $campusMaxIndex)])
                     ->setOrganisateur($organisateurs[random_int(0, $organisateursMaxIndex)])
                     ->setNom($faker->unique()->realTextBetween(1, 50))
@@ -69,8 +78,8 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
     public function getDependencies() {
         return [
             VillesFixtures::class,
-            EtatFixtures::class,
             LieuxFixtures::class,
+            EtatFixtures::class,
             AppFixtures::class,
         ];
     }
