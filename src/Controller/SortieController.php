@@ -17,10 +17,17 @@ class SortieController extends AbstractController {
     #[Route('/liste', name: 'liste')]
     public function liste(SortieRepository $sortieRepository): Response {
         $sorties = $sortieRepository->findAll();
+
+
         return $this->render('sortie/sortie.html.twig', [
             "sorties" => $sorties,
         ]);
     }
+
+//    #[Route('/voirDetails/{id}',name: 'voirDetails')]
+//    public function voirDetails($id){
+//
+//    }
     
     #[Route('/creer', name: 'creer')]
     public function creerSortie(Request $request, EntityManagerInterface $entityManager, EtatRepository $etatRepository): Response {
