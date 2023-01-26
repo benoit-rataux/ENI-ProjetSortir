@@ -12,6 +12,13 @@ use Symfony\component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: EtatRepository::class)]
 #[UniqueEntity(fields: ['libelle'])]
 class Etat {
+    public const LABEL_CREEE    = 'Créée';
+    public const LABEL_OUVERTE  = 'Ouverte';
+    public const LABEL_CLOTUREE = 'Clôturée';
+    public const LABEL_EN_COURS = 'Activité en cours';
+    public const LABEL_PASSEE   = 'passée';
+    public const LABEL_ANNULEE  = 'Annulée';
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
