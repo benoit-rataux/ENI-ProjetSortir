@@ -14,7 +14,7 @@ use App\Repository\SortieRepository;
 class SortieController extends AbstractController
 {
     #[Route('/liste', name: 'liste')]
-    public function index(SortieRepository $sortieRepository): Response
+    public function liste(SortieRepository $sortieRepository): Response
     {
         $sorties = $sortieRepository -> findAll();
         return $this->render('sortie/sortie.html.twig', [
