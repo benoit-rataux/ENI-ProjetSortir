@@ -8,13 +8,37 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="example-wrapper">
-    <h1>Hello ! ✅</h1>
+<div class="container my-5">
+    <table class="border-2 border-gray-400">
+        <thead  >
+        <th >Nom de la sortie</th>
+        <th>Date de la Sortie</th>
+        <th>Clôture</th>
+        <th>inscrits/place</th>
+        <th>Etat</th>
+        <th>Inscrit</th>
+        <th>Organisateur</th>
+        <th>Actions</th>
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ 'D:/wamp64/www/eni-projetsortir/src/Controller/SortieController.php'|file_link(0) }}">src/Controller/SortieController.php</a></code></li>
-        <li>Your template at <code><a href="{{ 'D:/wamp64/www/eni-projetsortir/templates/sortie/sortie.html.twig'|file_link(0) }}">templates/sortie/sortie.html.twig</a></code></li>
-    </ul>
+        </thead>
+        <tbody>
+        {%  for sortie in sorties  %}
+            <tr>
+                <td>{{ sortie.nom }}</td>
+                <td>{{ sortie.dateHeureDebut | date('d/m/Y  h:i')  }}</td>
+                <td>{{ sortie.dateLimiteInscription | date('d/m/Y ')  }}</td>
+                <td>{{ sortie.nbInscriptionsMax }}</td>
+                <td>{{ sortie.etat.libelle}}</td>
+                <td>non</td>
+                <td><a href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a></td>
+                <td>Afficher -se Desister</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 </div>
+
+
+
+
 {% endblock %}
