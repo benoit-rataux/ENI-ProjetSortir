@@ -28,7 +28,7 @@
                 <td>{{ sortie.dateHeureDebut | date('d/m/Y  h:i')  }}</td>
                 <td>{{ sortie.dateLimiteInscription | date('d/m/Y ')  }}</td>
                 <td>{{ sortie.nbInscriptionsMax }}</td>
-                <td>En cours</td>
+                <td>{{ sortie.etat.libelle}}</td>
                 <td>non</td>
                 <td><a href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a></td>
                 <td>Afficher -se Desister</td>
