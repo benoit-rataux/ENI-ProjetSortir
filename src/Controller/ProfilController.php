@@ -65,9 +65,26 @@ class ProfilController extends AbstractController {
             );
         }
         
-        return $this->render('participant/profil.html.twig', [
+        return $this->render('participant/monprofil.html.twig', [
             'profilForm'     => $profileForm->createView(),
             'motDePasseForm' => $motDePasseForm->createView(),
+        ]);
+    }
+    
+    #[Route('/{id}', name: 'detail', methods: ['GET'])]
+    public function detail(
+        int                   $id,
+        ParticipantRepository $participantRepository,
+    ) {
+        $participant = $participantRepository->find($id);
+        
+        if(!($participant instanceof Participant)) {
+            $this->addFlash('error', 'Participant non trouvé');
+            return $this->redirectToRoute('app_sortie_liste');
+        }
+        
+        return $this->render('participant/profil.html.twig', [
+            'participant' => $participant,
         ]);
     }
 }

@@ -1,23 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ parent() }} - profil{% endblock %}
-
 {% block body %}
-    <div class="profil-photo-container">
-        <img src="{{ asset('resources/images/profil/_default.png') }}" alt="photo profil">
-    </div>
-    
-    <div class="profil-form-container">
-        {{ form_start(profilForm) }}
-        {{ form_widget(profilForm) }}
-        <button>Modifier</button>
-        {{ form_end(profilForm) }}
-    </div>
-    
-    <div class="motpasse-form-container">
-        {{ form_start(motDePasseForm) }}
-        {{ form_widget(motDePasseForm) }}
-        <button>Changer de mot de passe!</button>
-        {{ form_end(motDePasseForm) }}
-    </div>
+    <h2>{{ participant.pseudo }}</h2>
+    <section class="profil-detail">
+        <div class="flex flex-row">
+            <span>Prénom:</span>
+            <span>{{ participant.prenom }}</span>
+        </div>
+        
+        <div class="flex flex-row">
+            <span>Nom:</span>
+            <span>{{ participant.nom }}</span>
+        </div>
+        
+        <div class="flex flex-row">
+            <span>Téléphone:</span>
+            <span>{{ participant.telephone }}</span>
+        </div>
+        
+        <div class="flex flex-row">
+            <span>Email:</span>
+            <span>{{ participant.mail }}</span>
+        </div>
+        
+        <div class="flex flex-row">
+            <span>Campus:</span>
+            <span>{{ participant.campus.nom }}</span>
+        </div>
+    </section>
 {% endblock %}
+    
+{% block title %}
+    {{ parent() }} - infos {{ participant.pseudo }}
+{% endblock %}
+    
