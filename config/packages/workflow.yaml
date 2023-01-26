@@ -1,2 +1,57 @@
 framework:
-    workflows: null
+  workflows:
+    sortie_workflow:
+      type: 'state_machine'
+      audit_trail:
+        enabled: true
+
+      marking_store:
+        type: 'method'
+        property: 'currentPlace'
+
+      supports:
+        - App\Entity\Sortie
+
+      initial_marking: creee
+
+      places:
+        - creee
+        - ouverte
+        - cloturee
+        - en_cours
+        - passee
+        - annulee
+        - historisee
+
+      transitions:
+        modifier:
+          from: creee
+          to: creee
+
+        publier:
+          from: creee
+          to: ouverte
+
+        cloturer:
+          from: ouverte
+          to: cloturee
+
+        reouvrir:
+          from: cloturee
+          to: ouverte
+
+        annuler:
+          from: [ ouverte, cloturee ]
+          to: annulee
+
+        commencer:
+          from: [ ouverte, cloturee ]
+          to: en_cours
+
+        terminer:
+          from: en_cours
+          to: passee
+
+        archiver:
+          from: [ passee, annulee ]
+          to: historisee
