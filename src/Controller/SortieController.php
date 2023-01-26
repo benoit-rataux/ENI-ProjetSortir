@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Sortie;
+use App\Repository\EtatRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -10,9 +11,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\SortieRepository;
 
+#[Route('/sortie', name:'app_sortie_')]
 class SortieController extends AbstractController
 {
-    #[Route('/sortie', name: 'app_sortie')]
+    #[Route('/liste', name: 'liste')]
     public function index(SortieRepository $sortieRepository): Response
     {
         $sorties = $sortieRepository -> findAll();
@@ -21,8 +23,8 @@ class SortieController extends AbstractController
         ]);
     }
 
-    #[Route('/sortie/creer', name: 'app_sortie_creer')]
-    public function creerSortie(Request $request,EntityManagerInterface $entityManager): Response{
+    #[Route('/creer', name: 'creer')]
+    public function creerSortie(Request $request,EntityManagerInterface $entityManager, EtatRepository $etatRepository): Response{
         $sortie = new Sortie();
 
         $sortieForm = $this->createForm(Sortie::class, $sortie);
@@ -33,10 +35,16 @@ class SortieController extends AbstractController
             $sortie->setOrganisateur($this->getUser());
             //TODO completer
 
+            $listEtat = $etatRepository->findOneBy(array('libelle'=>'Créée'));
+            $sortie->setEtat($listEtat);
+
+            $this->addFlash('success', 'Votre sortie a bien été créée');
+            return $this->redirectToRoute('app_sortie');
+
         }
 
         return $this->render('sortie/creerSortie.html.twig', [
-            'Sortieform' => $sortieForm->createView()]);
+            'SortieForm' => $sortieForm->createView()]);
 
 
     }
