@@ -26,14 +26,17 @@ class AppFixtures extends Fixture {
         $podlar = new Campus();
         $podlar->setNom('Peau-de-Lard');
         $manager->persist($podlar);
+        $this->addReference('campus_podlar', $podlar);
         
         $ocean = new Campus();
         $ocean->setNom('Soulloceiyan!');
         $manager->persist($ocean);
+        $this->addReference('campus_ocean', $ocean);
         
         $lespace = new Campus();
         $lespace->setNom('L\'espace');
         $manager->persist($lespace);
+        $this->addReference('campus_lespace', $lespace);
         
         /*******************
          * Participants
@@ -114,5 +117,6 @@ class AppFixtures extends Fixture {
         );
         
         $manager->persist($user);
+        $this->addReference('participant_' . $pseudo, $user);
     }
 }
