@@ -7,10 +7,10 @@ framework:
 
       marking_store:
         type: 'method'
-        property: 'currentPlace'
+        property: 'libelle'
 
       supports:
-        - App\Entity\Sortie
+        - App\Entity\Etat
 
       initial_marking: creee
 
