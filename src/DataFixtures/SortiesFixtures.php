@@ -3,6 +3,7 @@
 namespace App\DataFixtures;
 
 use App\Entity\Lieu;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Entity\Ville;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -68,6 +69,17 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
                     ->setNbInscriptionsMax($faker->numberBetween(1, 50))
                     ->setInfosSortie($faker->realTextBetween(5, 600))
                 ;
+                
+                for(
+                    $participantIndex = 0;
+                    $participantIndex < min(random_int(0, ParticipantsFixtures::$count), $sortie->getNbInscriptionsMax());
+                    $participantIndex++
+                ) {
+                    /** @var Participant $participant */
+                    $participant = $this->getReference(ParticipantsFixtures::REF_LABEL . $participantIndex);
+                    $sortie->addParticipant($participant);
+                }
+                
                 $manager->persist($sortie);
             }
         }

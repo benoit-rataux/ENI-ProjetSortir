@@ -12,6 +12,8 @@ use Faker\Generator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class ParticipantsFixtures extends Fixture implements DependentFixtureInterface {
+    const REF_LABEL = 'participant_';
+    public static int $count = 0;
     private Generator $faker;
     
     public function __construct(
@@ -28,7 +30,7 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
         $ocean   = $this->getReference(CampusFixtures::REF_PREFIX . 'ocean');
         $lespace = $this->getReference(CampusFixtures::REF_PREFIX . 'lespace');
         
-        $this->saveUser(
+        $participant = $this->saveUser(
             $manager,
             'admin',
             'Albus',
@@ -39,8 +41,9 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             '0000000001',
             true,
         );
+        $this->addReference(ParticipantsFixtures::REF_LABEL . self::$count++, $participant);
         
-        $this->saveUser(
+        $participant = $this->saveUser(
             $manager,
             'Garry911',
             'Garry',
@@ -50,8 +53,9 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             'garry911@labretagne.beur',
             '0900000304',
         );
+        $this->addReference(ParticipantsFixtures::REF_LABEL . self::$count++, $participant);
         
-        $this->saveUser(
+        $participant = $this->saveUser(
             $manager,
             'La petite Sirene',
             'Arielle',
@@ -59,8 +63,9 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             $ocean,
             'Arielle7',
         );
+        $this->addReference(ParticipantsFixtures::REF_LABEL . self::$count++, $participant);
         
-        $this->saveUser(
+        $participant = $this->saveUser(
             $manager,
             'Spaaaaaace!',
             'Elon',
@@ -69,6 +74,7 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             'Spaaaaaac3!',
             'on_est_dans_l_espace@spaaaace.com',
         );
+        $this->addReference(ParticipantsFixtures::REF_LABEL . self::$count++, $participant);
         
         $manager->flush();
     }
@@ -83,7 +89,7 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
         string        $mail = null,
         string        $telephone = null,
         bool          $isAdmin = false,
-    ) {
+    ): Participant {
         $mail      = $mail !== null ? $mail : $this->faker->email();
         $telephone = $telephone !== null ? $telephone : $this->faker->PhoneNumber();
         
@@ -107,6 +113,8 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
         $this->addReference('participant_' . $pseudo, $user);
         
         $manager->flush();
+        
+        return $user;
     }
     
     public function getDependencies() {
