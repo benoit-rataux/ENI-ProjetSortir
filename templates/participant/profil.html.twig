@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{% block title %}profil {{ participant.pseudo }}{% endblock %}
+
 {% block body %}
     <h2>{{ participant.pseudo }}</h2>
     <section class="profil-detail">
@@ -29,8 +31,3 @@
         </div>
     </section>
 {% endblock %}
-    
-{% block title %}
-    {{ parent() }} - infos {{ participant.pseudo }}
-{% endblock %}
-    
