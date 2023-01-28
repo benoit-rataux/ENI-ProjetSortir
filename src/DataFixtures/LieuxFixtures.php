@@ -10,10 +10,14 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
 class LieuxFixtures extends Fixture implements DependentFixtureInterface {
-    public const RNG_LIEUX_COUNT_MIN = 1;
-    public const RNG_LIEUX_COUNT_MAX = 10;
     
-    public const REF_LABEL = 'Lieu_';
+    ////////// options \\\\\\\\\\\\\
+    private const RNG_LIEUX_PER_VILLE_MIN = 1;
+    private const RNG_LIEUX_PER_VILLE_MAX = 10;
+    ////////////////////////////////
+    
+    public const  REF_PREFIX = Lieu::class . '_';
+    public static int $count = 0;
     
     public function load(ObjectManager $manager): void {
         
@@ -21,7 +25,7 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface {
         
         /*************************/
         /** @var Ville $villeISS */
-        $villeISS = $this->getReference(VillesFixtures::VILLE_ISS);
+        $villeISS = $this->getReference(VillesFixtures::REF_PREFIX . '0');
         
         $lieu = new Lieu();
         $lieu
@@ -41,13 +45,12 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface {
         
         /*************************/
         
-        for($villeIndex = 0; $villeIndex < VillesFixtures::RNG_VILLES_COUNT; $villeIndex++) {
+        for($villeIndex = 0; $villeIndex < VillesFixtures::$count; $villeIndex++) {
             /** @var Ville $ville */
-            $ville = $this->getReference(VillesFixtures::REF_LABEL . $villeIndex);
+            $ville = $this->getReference(VillesFixtures::REF_PREFIX . $villeIndex);
             
             // nombre de lieux par villes
-            $lieuxCount = random_int(self::RNG_LIEUX_COUNT_MIN, self::RNG_LIEUX_COUNT_MAX);
-            //$this->addReference(VillesFixtures::REF_LABEL . $villeIndex . '_lieux_count', $lieuxCount);
+            $lieuxCount = random_int(self::RNG_LIEUX_PER_VILLE_MIN, self::RNG_LIEUX_PER_VILLE_MAX);
             
             for($lieuIndex = 0; $lieuIndex < $lieuxCount; $lieuIndex++) {
                 $wordsCount = random_int(1, 5);
@@ -58,7 +61,7 @@ class LieuxFixtures extends Fixture implements DependentFixtureInterface {
                     ->setVille($ville)
                 ;
                 $manager->persist($lieu);
-                $this->addReference(self::REF_LABEL . $villeIndex . '_' . $lieuIndex, $lieu);
+                $this->addReference(self::REF_PREFIX . self::$count++, $lieu);
             }
         }
         
