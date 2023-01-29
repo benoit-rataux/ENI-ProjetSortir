@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Sortie;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,27 +15,47 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Sortie[]    findAll()
  * @method Sortie[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SortieRepository extends ServiceEntityRepository
-{
-    public function __construct(ManagerRegistry $registry)
-    {
+class SortieRepository extends ServiceEntityRepository {
+    public function __construct(ManagerRegistry $registry) {
         parent::__construct($registry, Sortie::class);
     }
-
-    public function save(Sortie $entity, bool $flush = false): void
-    {
+    
+    public function findSortiesACloturer() {
+        return $this
+            ->createQueryBuilder('sortie')
+            ->select('sortie.*, count(participant.*) as nb_inscrits')
+            ->join('sortie.participants', 'participant')
+            ->orWhere('nb_inscrits >= sortie.nbInscriptionsMax')
+            ->orWhere(':today > sortie.dateLimiteInscription')
+            ->setParameter('today', new DateTime())
+            ->getQuery()->getResult()
+        ;
+    }
+    
+    public function findSortiesAReouvrir() {
+        return $this
+            ->createQueryBuilder('sortie')
+            ->select('sortie.*, count(participant.*) as nb_inscrits')
+            ->join('sortie.participants', 'participant')
+            ->andWhere('nb_inscrits < sortie.nbInscriptionsMax')
+            ->andWhere(':today < sortie.dateLimiteInscription')
+            ->setParameter('today', new DateTime())
+            ->getQuery()->getResult()
+        ;
+    }
+    
+    public function save(Sortie $entity, bool $flush = false): void {
         $this->getEntityManager()->persist($entity);
-
-        if ($flush) {
+        
+        if($flush) {
             $this->getEntityManager()->flush();
         }
     }
-
-    public function remove(Sortie $entity, bool $flush = false): void
-    {
+    
+    public function remove(Sortie $entity, bool $flush = false): void {
         $this->getEntityManager()->remove($entity);
-
-        if ($flush) {
+        
+        if($flush) {
             $this->getEntityManager()->flush();
         }
     }

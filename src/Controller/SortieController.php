@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Sortie;
 use App\Form\InscriptionType;
 use App\Repository\SortieRepository;
+use App\Service\Workflow\SortieEtatsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -55,6 +56,21 @@ class SortieController extends AbstractController {
         ]);
         
         
+    }
+    
+    
+    #[Route('/publier/{id}', name: 'publier', methods: ['GET'])]
+    public function publier(
+        int                $id,
+        SortieRepository   $sortieRepository,
+        SortieEtatsManager $sortieTransitionsManager,
+    ) {
+        $sortie = $sortieRepository->find($id);
+        
+        $sortieTransitionsManager->publier($sortie);
+        
+        $this->addFlash('success', 'Sortie publiée!');
+        return $this->redirectToRoute('app_main_home');
     }
     
     #[Route('/detail/{id}', name: 'detail', methods: ['GET', 'POST'])]
