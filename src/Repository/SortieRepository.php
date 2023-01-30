@@ -2,6 +2,8 @@
 
 namespace App\Repository;
 
+use App\Entity\Etat;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -60,6 +62,33 @@ class SortieRepository extends ServiceEntityRepository {
         }
     }
 
+
+    public function findAllActiveByCampus(Participant $participant){
+
+        return $this->createQueryBuilder('sortie')
+            ->orWhere('sortie.organisateur = :utilisateurConnectee and etat.libelle = :etatCre')
+            ->setParameter('etatCre',Etat::LABEL_CREEE)
+            ->setParameter('utilisateurConnectee',$participant)
+            ->join('sortie.etat','etat')
+            ->orWhere('etat.libelle = :etatPublie')
+            ->setParameter('etatPublie',Etat::LABEL_OUVERTE)
+            ->orWhere('etat.libelle = :etatCloture')
+            ->setParameter('etatCloture',Etat::LABEL_CLOTUREE)
+            ->orWhere('etat.libelle = :etatEnCours')
+            ->setParameter('etatEnCours',Etat::LABEL_EN_COURS)
+//            todo
+//              a voir si on la vire
+            ->orWhere('etat.libelle = :etatPassee')
+            ->setParameter('etatPassee',Etat::LABEL_PASSEE)
+            ->orWhere('etat.libelle = :etatAnnulee')
+            ->setParameter('etatAnnulee',Etat::LABEL_ANNULEE)
+            ->getQuery()
+            ->getResult()
+            ;
+
+
+
+    }
 //    /**
 //     * @return Sortie[] Returns an array of Sortie objects
 //     */

@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Etat;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\InscriptionType;
 use App\Form\SortieType;
@@ -21,11 +22,22 @@ use Symfony\Component\Workflow\WorkflowInterface;
 #[Route('/sortie', name: 'app_sortie_')]
 class SortieController extends AbstractController {
     #[Route('/liste', name: 'liste')]
-    public function liste(SortieRepository $sortieRepository): Response {
-        $sorties = $sortieRepository->findAll();
+    public function liste(SortieRepository $sortieRepository,UserInterface $user ): Response {
+        /** @var  Participant $user */
+        $sorties = $sortieRepository->findAllActiveByCampus($user);
 
 
 //        dd($sorties);
+//        dd($sorties);
+        return $this->render('sortie/listeSortie.html.twig', [
+            "sorties" => $sorties,
+        ]);
+    }
+
+    #[Route('/listeFilstres', name: 'listeFiltres')]
+    public  function listeFiltres(SortieRepository $sortieRepository) : Response{
+        $sorties = $sortieRepository->findByOrganisateur();
+
         return $this->render('sortie/listeSortie.html.twig', [
             "sorties" => $sorties,
         ]);
