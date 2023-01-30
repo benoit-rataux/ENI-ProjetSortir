@@ -55,6 +55,18 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
             $dateInscription = $faker->dateTimeBetween(self::DATE_MIN, self::DATE_MAX);
             $dateDebut       = $faker->dateTimeBetween($dateInscription, self::DATE_MAX);
             
+            $sortie
+                ->setLieu($lieu)
+                ->setCampus($campus)
+                ->setOrganisateur($organisateur)
+                ->setNom($faker->unique()->realTextBetween(5, 20))
+                ->setDateHeureDebut($dateDebut)
+                ->setDuree($faker->numberBetween(1, 16) * 15)
+                ->setDateLimiteInscription($dateInscription)
+                ->setNbInscriptionsMax($faker->numberBetween(self::NB_PLACES_MIN, self::NB_PLACES_MAX))
+                ->setInfosSortie($faker->realTextBetween(20, 600))
+            ;
+            
             // inscription d'un nombre aléatoire de participants
             $nbParticipants            = 0;
             $nbParticipantsMaxPossible = min(ParticipantsFixtures::$count - 1, $sortie->getNbInscriptionsMax());
@@ -87,18 +99,6 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
                 $participant = $this->getReference(ParticipantsFixtures::REF_PREFIX . $participantIndex);
                 $sortie->addParticipant($participant);
             }
-            
-            $sortie
-                ->setLieu($lieu)
-                ->setCampus($campus)
-                ->setOrganisateur($organisateur)
-                ->setNom($faker->unique()->realTextBetween(5, 20))
-                ->setDateHeureDebut($dateDebut)
-                ->setDuree($faker->numberBetween(1, 16) * 15)
-                ->setDateLimiteInscription($dateInscription)
-                ->setNbInscriptionsMax($faker->numberBetween(self::NB_PLACES_MIN, self::NB_PLACES_MAX))
-                ->setInfosSortie($faker->realTextBetween(20, 600))
-            ;
             
             // sélection de l'état
             /** @var Etat $etat */
