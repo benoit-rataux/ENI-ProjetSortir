@@ -88,13 +88,13 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface {
     private Collection $sortiesOrganisees;
     
     #[ORM\Column(
-        length: 25,
+        length: 32,
         unique: true,
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         min: 3,
-        max: 25,
+        max: 32,
         minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
         maxMessage: 'Le nom ne peut excéder {{ limit }} caractères',
     )]
