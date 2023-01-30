@@ -8,9 +8,13 @@ use Doctrine\Persistence\ObjectManager;
 use Faker\Factory;
 
 class VillesFixtures extends Fixture {
-    public const  RNG_VILLES_COUNT = 12;
-    public const  REF_LABEL        = 'rngVille_';
-    public const  VILLE_ISS        = 'ISS';
+    
+    ////////// options \\\\\\\\\\\\\
+    private const  NB_MIN_A_GENERER = 12;
+    ////////////////////////////////
+    
+    public const   REF_PREFIX = Ville::class . '_';
+    public static int $count = 0;
     
     public function load(ObjectManager $manager): void {
         
@@ -22,17 +26,17 @@ class VillesFixtures extends Fixture {
             ->setCodePostal('H2G2')
         ;
         $manager->persist($ville);
-        $this->addReference(self::VILLE_ISS, $ville);
+        $this->addReference(self::REF_PREFIX . self::$count++, $ville);
         
         // some random villes
-        for($i = 0; $i < self::RNG_VILLES_COUNT; $i++) {
+        while(self::$count < self::NB_MIN_A_GENERER) {
             $ville = new Ville();
             $ville
                 ->setNom($faker->unique()->city())
                 ->setCodePostal($faker->unique()->postcode())
             ;
             $manager->persist($ville);
-            $this->addReference(self::REF_LABEL . $i, $ville);
+            $this->addReference(self::REF_PREFIX . self::$count++, $ville);
         }
         
         $manager->flush();

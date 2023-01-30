@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}ENI Sorties!{% endblock %}</title>
+    <title>ENI Sorties! - {% block title %}{% endblock %}</title>
     <link rel="icon"
           href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
     {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
@@ -10,17 +10,19 @@
         {{ encore_entry_link_tags('app') }}
     {% endblock %}
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
     
     {% block javascripts %}
         {{ encore_entry_script_tags('app') }}
     {% endblock %}
 </head>
 <body class="container-fluid" style="height: 90vh !important;">
-    <header class="flex flex-row justify-between bg-[#" >
+    <header class="flex flex-row justify-between bg-[#">
         {% block header %}
             <div class="flex">
-                <a href="{{ path('app_main_home') }}"><img src="{{ asset('/resources/images/logo.png') }}" class="h-[50px]" alt="Eni-Sortie"></a>
+                <a href="{{ path('app_main_home') }}"><img src="{{ asset('/resources/images/logo.png') }}"
+                                                           class="h-[50px]" alt="Eni-Sortie"></a>
                 <h1 class="text-3xl font-bold mx-2">ENI Sorties!</h1>
             </div>
             {{ include('inc/_navbar.html.twig') }}
@@ -36,6 +38,8 @@
     <footer>
         {% block footer %}{% endblock %}
     </footer>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN"
+            crossorigin="anonymous"></script>
 </body>
 </html>

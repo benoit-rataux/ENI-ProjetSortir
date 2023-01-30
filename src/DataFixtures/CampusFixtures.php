@@ -7,23 +7,29 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 class CampusFixtures extends Fixture {
-    public const REF_PREFIX = 'Campus_';
+    
+    ////////// options \\\\\\\\\\\\\
+    private const        NB_MIN_A_GENERER = 10;
+    ////////////////////////////////
+    
+    public const REF_PREFIX = Campus::class . '_';
+    public static $count = 0;
     
     public function load(ObjectManager $manager): void {
         $podlar = new Campus();
         $podlar->setNom('Peau-de-Lard');
         $manager->persist($podlar);
-        $this->addReference(self::REF_PREFIX . 'podlar', $podlar);
+        $this->addReference(self::REF_PREFIX . self::$count++, $podlar);
         
         $ocean = new Campus();
         $ocean->setNom('Soulloceiyan!');
         $manager->persist($ocean);
-        $this->addReference(self::REF_PREFIX . 'ocean', $ocean);
+        $this->addReference(self::REF_PREFIX . self::$count++, $ocean);
         
         $lespace = new Campus();
         $lespace->setNom('L\'espace');
         $manager->persist($lespace);
-        $this->addReference(self::REF_PREFIX . 'lespace', $lespace);
+        $this->addReference(self::REF_PREFIX . self::$count++, $lespace);
         
         $manager->flush();
     }
