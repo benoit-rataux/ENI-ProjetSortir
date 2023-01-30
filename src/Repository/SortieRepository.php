@@ -2,10 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\Etat;
 use App\Entity\Sortie;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use function Doctrine\ORM\QueryBuilder;
 
 /**
  * @extends ServiceEntityRepository<Sortie>
@@ -21,25 +23,71 @@ class SortieRepository extends ServiceEntityRepository {
     }
     
     public function findSortiesACloturer() {
+        $qb = $this->createQueryBuilder('sortie');
+        $qb
+            ->innerJoin('sortie.participants', 'participant')
+            ->innerJoin('sortie.etat', 'etat')
+            ->andWhere('etat.libelle != :etatCloturee')
+            ->andWhere(':today > sortie.dateLimiteInscription')
+            ->groupBy('sortie.id, sortie.nbInscriptionsMax')
+            ->andHaving($qb->expr()->gte(
+                'COUNT(participant)', 'sortie.nbInscriptionsMax'
+            ))
+            ->setParameter('etatCloturee', Etat::LABEL_CLOTUREE)
+            ->setParameter('today', (new DateTime())->format('Y-m-d'))
+        ;
+        
+        return $qb->getQuery()->getResult();
+    }
+    
+    public function findSortiesAReouvrir() {
+        $qb = $this->createQueryBuilder('sortie');
+        $qb
+            ->innerJoin('sortie.participants', 'participant')
+            ->andWhere(':today <= sortie.dateLimiteInscription')
+            ->setParameter('today', (new DateTime())->format('Y-m-d'))
+            ->groupBy('sortie.id, sortie.nbInscriptionsMax')
+            ->andHaving($qb->expr()->lt(
+                'COUNT(participant)', 'sortie.nbInscriptionsMax'
+            ))
+        ;
+        
+        return $qb->getQuery()->getResult();
+    }
+    
+    public function findSortiesACommencer() {
         return $this
             ->createQueryBuilder('sortie')
-            ->select('sortie.*, count(participant.*) as nb_inscrits')
-            ->join('sortie.participants', 'participant')
-            ->orWhere('nb_inscrits >= sortie.nbInscriptionsMax')
-            ->orWhere(':today > sortie.dateLimiteInscription')
+            ->join('sortie.etat', 'etat')
+            ->andWhere('etat.libelle = :ouverte OR etat.libelle = :cloturee')
+            ->andWhere(':today >= sortie.dateHeureDebut')
             ->setParameter('today', new DateTime())
+            ->setParameter('ouverte', Etat::LABEL_OUVERTE)
+            ->setParameter('cloturee', Etat::LABEL_CLOTUREE)
             ->getQuery()->getResult()
         ;
     }
     
-    public function findSortiesAReouvrir() {
+    public function findSortiesATerminer() {
         return $this
             ->createQueryBuilder('sortie')
-            ->select('sortie.*, count(participant.*) as nb_inscrits')
-            ->join('sortie.participants', 'participant')
-            ->andWhere('nb_inscrits < sortie.nbInscriptionsMax')
-            ->andWhere(':today < sortie.dateLimiteInscription')
-            ->setParameter('today', new DateTime())
+            ->join('sortie.etat', 'etat')
+            ->andWhere('etat.libelle = :en_cours')
+            ->andWhere(":maintenant >= DATE_ADD(sortie.dateHeureDebut, sortie.duree, 'MINUTE')")
+            ->setParameter('en_cours', Etat::LABEL_EN_COURS)
+            ->setParameter('maintenant', new DateTime())
+            ->getQuery()->getResult()
+        ;
+    }
+    
+    public function findSortiesAHistoriser() {
+        return $this
+            ->createQueryBuilder('sortie')
+            ->join('sortie.etat', 'etat')
+            ->andWhere('etat.libelle = :en_cours')
+            ->andWhere(":maintenant >= DATE_ADD(sortie.dateHeureDebut, 30, 'DAY')")
+            ->setParameter('en_cours', Etat::LABEL_EN_COURS)
+            ->setParameter('maintenant', new DateTime())
             ->getQuery()->getResult()
         ;
     }

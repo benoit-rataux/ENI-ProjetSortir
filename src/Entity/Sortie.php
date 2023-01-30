@@ -66,6 +66,8 @@ class Sortie {
     #[ORM\JoinColumn(nullable: false)]
     private ?Participant $organisateur = null;
     
+    private $etatWorkflow;
+    
     public function __construct() {
         $this->participants = new ArrayCollection();
     }
@@ -194,6 +196,22 @@ class Sortie {
     
     public function setOrganisateur(?Participant $organisateur): self {
         $this->organisateur = $organisateur;
+        
+        return $this;
+    }
+    
+    /**
+     * @return mixed
+     */
+    public function getEtatWorkflow() {
+        return $this->etatWorkflow;
+    }
+    
+    /**
+     * @param mixed $etatWorkflow
+     */
+    public function setEtatWorkflow(string $etatWorkflow): self {
+        $this->etatWorkflow = $etatWorkflow;
         
         return $this;
     }

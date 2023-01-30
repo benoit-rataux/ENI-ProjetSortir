@@ -6,11 +6,12 @@ framework:
         enabled: true
 
       marking_store:
+        service: sortie_marking_store
         type: 'method'
-        property: 'libelle'
+        property: 'etatWorkflow'
 
       supports:
-        - App\Entity\Etat
+        - App\Entity\Sortie
 
       initial_marking: creee
 
