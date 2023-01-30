@@ -4,15 +4,24 @@
 
 {% block body %}
     <div class="container">
-        <h2>Créer une sortie </h2>
 
-        {{ form_start(SortieForm) }}
+        <h2 class="text-2xl font-bold">Créer une sortie </h2>
 
-        {{ form_widget(SortieForm) }}
+        <div class="container flex justify-center my-5">
 
-        <button>Créer</button>
+            {{ form_start(SortieForm) }}
 
-        {{ form_end(SortieForm) }}
+            {{ form_widget(SortieForm) }}
+
+            <button class="border-2">Enregistrer</button>
+
+            {# Publier la sortie #}
+            {# Annuler la création #}
+
+            {{ form_end(SortieForm) }}
+
+        </div>
+
 
     </div>
 
