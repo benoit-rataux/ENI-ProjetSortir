@@ -12,13 +12,24 @@ use Symfony\component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: EtatRepository::class)]
 #[UniqueEntity(fields: ['libelle'])]
 class Etat {
-    public const LABEL_CREEE      = 'Créée';
-    public const LABEL_OUVERTE    = 'Ouverte';
-    public const LABEL_CLOTUREE   = 'Clôturée';
-    public const LABEL_EN_COURS   = 'Activité en cours';
-    public const LABEL_PASSEE     = 'passée';
-    public const LABEL_ANNULEE    = 'Annulée';
-    public const LABEL_HISTORISEE = 'Historisée';
+    // Ces labels DOIVENT correspondre aux states
+    // déclarés dans /config/packages/workflow.yaml
+    public const TRANSITION_ETAT_INITIAL = 'creer';
+    public const TRANSITION_MODIFIER     = 'modifier';
+    public const TRANSITION_PUBLIER      = 'publier';
+    public const TRANSITION_CLOTURER     = 'cloturer';
+    public const TRANSITION_REOUVRIR     = 'reouvrir';
+    public const TRANSITION_ANNULER      = 'annuler';
+    public const TRANSITION_COMMENCER    = 'commencer';
+    public const TRANSITION_TERMINER     = 'terminer';
+    public const TRANSITION_ARCHIVER     = 'archiver';
+    public const LABEL_CREEE             = 'creee';
+    public const LABEL_OUVERTE           = 'ouverte';
+    public const LABEL_CLOTUREE          = 'cloturee';
+    public const LABEL_EN_COURS          = 'en_cours';
+    public const LABEL_PASSEE            = 'passee';
+    public const LABEL_ANNULEE           = 'annulee';
+    public const LABEL_HISTORISEE        = 'historisee';
     
     #[ORM\Id]
     #[ORM\GeneratedValue]
