@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\Campus;
 use App\Entity\Lieu;
 use App\Entity\Sortie;
 use App\Entity\Ville;
@@ -31,6 +32,7 @@ class SortieType extends AbstractType
             //Date et heure
             ->add('dateHeureDebut',
                 DateTimeType::class,[
+                    'html5' => true,
                     'widget' => 'single_text',
                     'label' => 'Date et heure de la sortie : ',
                     ])
@@ -39,6 +41,7 @@ class SortieType extends AbstractType
             ->add(
                 'dateLimiteInscription',
                 DateTimeType::class,[
+                    'html5' => true,
                     'widget' => 'single_text',
                     'label' => 'Date limite d\'inscription',
                     ])
@@ -65,10 +68,27 @@ class SortieType extends AbstractType
                     'label' => 'Description et infos : ',
                     ])
 
-
             //Campus
-            //Ville
+            ->add(
+                'campus',
+                EntityType::class,[
+                    'label' => 'Campus',
+                    'class' => Campus::class,
+                    'choice_label' => 'nom',
+                ]
+
+            )
+
             //Lieu
+            ->add(
+                'lieu',
+                EntityType::class,[
+                    'class'=>Lieu::class,
+                    'choice_label' => 'nom',
+                ])
+
+            //Ville
+
             /*
             + Ajout lieu
             - Rue
@@ -77,17 +97,6 @@ class SortieType extends AbstractType
             - Longitude
             */
 
-/*            ->add('ville', EntityType::class, [
-                'label' => 'Ville',
-                'class' => Ville::class,
-                'choice_label' => 'nom',
-            ])
-
-            ->add('lieu', EntityType::class,[
-                'label' => 'Lieu',
-                'class' => Lieu::class,
-                'choice_label' => 'nom',
-            ])*/
         ;
     }
 
