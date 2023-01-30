@@ -17,14 +17,14 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
     
     ////////// options \\\\\\\\\\\\\
     private const                 NB_MIN_A_GENERER = 100;
+    private const                 DATE_MIN         = '-120 days';
+    private const                 DATE_MAX         = '+30 days';
+    private const                 NB_PLACES_MIN    = 1;
+    private const                 NB_PLACES_MAX    = 12;
     ////////////////////////////////
     
     public const REF_PREFIX = Sortie::class . '_';
     
-    private const                 DATE_MIN      = '-120 days';
-    private const                 DATE_MAX      = '+30 days';
-    private const                 NB_PLACES_MIN = 1;
-    private const                 NB_PLACES_MAX = 12;
     
     public static int $count = 0;
     
@@ -70,9 +70,9 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
                 case 5:
                 case 6:
                 case 7:
-                case 8:
                     $nbParticipants = random_int(0, $nbParticipantsMaxPossible);
                     break;
+                case 8:
                 case 9:
                 case 10:
                     $nbParticipants = $nbParticipantsMaxPossible;
