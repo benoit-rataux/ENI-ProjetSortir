@@ -31,7 +31,8 @@
                 <td class="text-center border-2 border-gray-400">{{ sortie.etat.libelle}}</td>
                 <td class="text-center border-2 border-gray-400">non</td>
                 <td class="text-center border-2 border-gray-400"><a href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a></td>
-                <td class="text-center border-2 border-gray-400">Afficher -se Desister</td>
+                <td class="text-center border-2 border-gray-400">
+                    <a href="{{ path('app_sortie_detail',{'id' : sortie.id}) }}">Afficher</a> - se Desister</td>
             </tr>
         {% endfor %}
         </tbody>
