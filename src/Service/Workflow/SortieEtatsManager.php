@@ -75,7 +75,16 @@ class SortieEtatsManager {
         $this->reouvrir($sortie);
     }
     
-    public function annuler(Sortie $sortie): void {
+    public function annuler(Sortie $sortie, Participant $participant) {
+        // mise à jour !
+        $this->updateDataCommencer();
+        
+        if($participant->getId() !== $sortie->getOrganisateur()->getId())
+            throw new BLLException("Vous ne pouvez annuler que les sorties dont vous êtes l'organisateur ! Tabarnouche !");
+        
+        if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_ANNULER))
+            throw new BLLException("Vous ne pouvez pas annuler la sortie car elle est : " . $sortie->getEtat()->getLibelle());
+        
         $this->applyTransition($sortie, Etat::TRANSITION_ANNULER);
     }
     

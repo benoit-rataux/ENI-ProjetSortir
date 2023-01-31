@@ -168,6 +168,27 @@ class SortieController extends AbstractController {
         return $this->redirectToRoute('app_main_home');
     }
     
+    #[Route('/annuler/{id}', name: 'annuler', methods: ['GET'])]
+    public function annuler(
+        int                $id,
+        SortieRepository   $sortieRepository,
+        SortieEtatsManager $sortieTransitionsManager,
+        UserInterface      $participantConnecte,
+    ) {
+        $sortie = $sortieRepository->find($id);
+        /** @var Participant $participantConnecte */
+        
+        try {
+            $sortieTransitionsManager->annuler($sortie, $participantConnecte);
+        } catch(BLLException $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('app_main_home');
+        }
+        
+        $this->addFlash('success', "Vous n'êtes plus inscrit à la sortie \"" . $sortie->getNom() . '" !');
+        return $this->redirectToRoute('app_main_home');
+    }
+    
     #[Route('/detail/{id}', name: 'detail', methods: ['GET', 'POST'])]
     public function detail(
         int                    $id,
