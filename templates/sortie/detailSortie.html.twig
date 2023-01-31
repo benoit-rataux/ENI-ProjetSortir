@@ -1,9 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}détail sortie{% endblock %}
+{% block title %}{{ sortie.nom }}{% endblock %}
 
 {% block body %}
-    <h2 class="text-center text-2xl text-black my-5">Afficher une sortie</h2>
+    <div class=" my-5">
+        <h2 class="text-center text-2xl text-black">"{{ sortie.nom }}"</h2>
+        <div class="text-center italic">{{ sortie.etat.libelle }}</div>
+    </div>
     
     <div class="sortie-detail container flex flex-row ">
         <div id="sortie-detail-col1 " class="w-1/2 mx-5">
@@ -13,13 +16,13 @@
             </div>
             
             <div>
-                <span>Date et heure de la sortie: </span>
-                <span class="font-bold">{{ sortie.dateHeureDebut | date('d/m/Y à h:i') }}</span>
+                <span>Date limite d'inscription: </span>
+                <span class="font-bold">{{ sortie.dateLimiteInscription | date('d/m/Y à h:i') }}</span>
             </div>
             
             <div>
-                <span>Date limite d'inscription: </span>
-                <span class="font-bold">{{ sortie.dateLimiteInscription | date('d/m/Y à h:i') }}</span>
+                <span>Date et heure de la sortie: </span>
+                <span class="font-bold">{{ sortie.dateHeureDebut | date('d/m/Y à h:i') }}</span>
             </div>
             
             <div>

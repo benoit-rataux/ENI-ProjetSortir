@@ -6,7 +6,6 @@ use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Exception\BLLException;
-use App\Form\InscriptionType;
 use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
@@ -141,21 +140,32 @@ class SortieController extends AbstractController {
 //            ]);
         }
         
-        $this->addFlash('success', 'Vous êtes inscrits à la sortie "' . $sortie->getNom() . '" ! Amusez-vous bien !');
+        $this->addFlash('success', 'Vous êtes inscrit à la sortie "' . $sortie->getNom() . '" ! Amusez-vous bien !');
         return $this->redirectToRoute('app_main_home');
 //        return $this->redirectToRoute('app_sortie_detail', [
 //            'id' => $id
 //        ]);
     }
     
-    #[Route('/sedesister/{id}', name: 'sedesister', methods: ['GET'])]
+    #[Route('/sedesinscrire/{id}', name: 'sedesister', methods: ['GET'])]
     public function seDesister(
         int                $id,
         SortieRepository   $sortieRepository,
         SortieEtatsManager $sortieTransitionsManager,
         UserInterface      $participantConnecte,
     ) {
-    
+        $sortie = $sortieRepository->find($id);
+        /** @var Participant $participantConnecte */
+        
+        try {
+            $sortieTransitionsManager->seDesister($sortie, $participantConnecte);
+        } catch(BLLException $e) {
+            $this->addFlash('error', $e->getMessage());
+            return $this->redirectToRoute('app_main_home');
+        }
+        
+        $this->addFlash('success', "Vous n'êtes plus inscrit à la sortie \"" . $sortie->getNom() . '" !');
+        return $this->redirectToRoute('app_main_home');
     }
     
     #[Route('/detail/{id}', name: 'detail', methods: ['GET', 'POST'])]

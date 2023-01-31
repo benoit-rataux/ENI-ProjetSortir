@@ -47,10 +47,32 @@ class SortieEtatsManager {
         
         // ajout du participant
         $sortie->addParticipant($participant);
+        $this->sortieRepository->save($sortie, true);
         
         // mise à jour de l'état de la sortie
         if(count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax())
             $this->cloturer($sortie);
+    }
+    
+    /**
+     * @throws BLLException
+     */
+    public function seDesister(Sortie $sortie, Participant $participant): void {
+        // mise à jour !
+        $this->updateDataCommencer();
+        
+        if(
+            $sortie->getEtat()->getLibelle() !== Etat::LABEL_OUVERTE &&
+            $sortie->getEtat()->getLibelle() !== Etat::LABEL_CLOTUREE
+        )
+            throw new BLLException("Vous ne pouvez vous désister qu'à une sortie qui n'a pas encore commencé!");
+        
+        // retrait du participant
+        $sortie->removeParticipant($participant);
+        $this->sortieRepository->save($sortie, true);
+        
+        // mise à jour de l'état de la sortie
+        $this->reouvrir($sortie);
     }
     
     public function annuler(Sortie $sortie): void {
@@ -115,12 +137,7 @@ class SortieEtatsManager {
         $sortiesAReouvrir = $this->sortieRepository->findSortiesAReouvrir();
         
         foreach($sortiesAReouvrir as $sortie) {
-            try {
-                $this->reouvrir($sortie);
-            } catch(BLLException $e) {
-                //@TODO: envoyer l'erreur dans les logs
-                printf($e->getMessage());
-            }
+            $this->reouvrir($sortie);
         }
         
         return $this;
@@ -130,12 +147,7 @@ class SortieEtatsManager {
         $sortiesACloturer = $this->sortieRepository->findSortiesACloturer();
         
         foreach($sortiesACloturer as $sortie) {
-            try {
-                $this->cloturer($sortie);
-            } catch(BLLException $e) {
-                //@TODO: envoyer l'erreur dans les logs
-                printf($e->getMessage());
-            }
+            $this->cloturer($sortie);
         }
         
         return $this;
@@ -145,12 +157,7 @@ class SortieEtatsManager {
         $sortiesCommencees = $this->sortieRepository->findSortiesACommencer();
         
         foreach($sortiesCommencees as $sortie) {
-            try {
-                $this->commencer($sortie);
-            } catch(BLLException $e) {
-                //@TODO: envoyer l'erreur dans les logs
-                printf($e->getMessage());
-            }
+            $this->commencer($sortie);
         }
         
         return $this;
@@ -160,12 +167,7 @@ class SortieEtatsManager {
         $sortiesCommencees = $this->sortieRepository->findSortiesATerminer();
         
         foreach($sortiesCommencees as $sortie) {
-            try {
-                $this->terminer($sortie);
-            } catch(BLLException $e) {
-                //@TODO: envoyer l'erreur dans les logs
-                printf($e->getMessage());
-            }
+            $this->terminer($sortie);
         }
         
         return $this;
@@ -175,12 +177,7 @@ class SortieEtatsManager {
         $sortiesCommencees = $this->sortieRepository->findSortiesAHistoriser();
         
         foreach($sortiesCommencees as $sortie) {
-            try {
-                $this->historiser($sortie);
-            } catch(BLLException $e) {
-                //@TODO: envoyer l'erreur dans les logs
-                printf($e->getMessage());
-            }
+            $this->historiser($sortie);
         }
         
         return $this;
@@ -192,7 +189,6 @@ class SortieEtatsManager {
      * @param Sortie $sortie
      * @param string $transition
      * @return void
-     * @throws BLLException
      */
     private function applyTransition(Sortie $sortie, string $transition): void {
         if($transition === Etat::TRANSITION_ETAT_INITIAL) // met à état initial
@@ -209,10 +205,10 @@ class SortieEtatsManager {
             
             $this->sortieRepository->save($sortie, true);
         } catch(LogicException $e) {
-            throw new BLLException(
+            printf(
                 'impossible de ' . $transition . ' ' .
                 'la sortie "' . $sortie->getNom() . '" ' .
-                '[' . $sortie->getEtatWorkflow() . '] '
+                '[' . $sortie->getEtatWorkflow() . "]\n"
             );
         }
     }
