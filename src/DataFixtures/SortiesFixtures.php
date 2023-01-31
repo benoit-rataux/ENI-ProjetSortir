@@ -31,7 +31,7 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
     public function load(ObjectManager $manager): void {
         $faker = Factory::create('fr_FR');
         
-        for($villeIndex = 0; $villeIndex < VillesFixtures::$count; $villeIndex++) {
+        while(self::$count++ < self::NB_MIN_A_GENERER) {
             $sortie = new Sortie();
             
             /** @var Lieu $lieu */
