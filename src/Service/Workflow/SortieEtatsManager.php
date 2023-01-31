@@ -3,7 +3,9 @@
 namespace App\Service\Workflow;
 
 use App\Entity\Etat;
+use App\Entity\Participant;
 use App\Entity\Sortie;
+use App\Exception\BLLException;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use DateTime;
@@ -23,6 +25,31 @@ class SortieEtatsManager {
     
     public function publier(Sortie $sortie): void {
         $this->applyTransition($sortie, Etat::TRANSITION_PUBLIER);
+    }
+    
+    /**
+     * @throws BLLException
+     */
+    public function sinscrire(Sortie $sortie, Participant $participant): void {
+        // pour être sûr que les sorties ouvertes sont bien à jour
+        $this->updateDataReouvrir();
+        $this->updateDataCloturer();
+        
+        if($sortie->getEtat()->getLibelle() !== Etat::LABEL_OUVERTE)
+            throw new BLLException("Vous ne pouvez vous inscrire qu'à une sortie dont les inscriptions sont ouvertes !");
+        
+        if(count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax())
+            throw new BLLException("Il n'y a plus de place disponibles pour la sortie " . $sortie->getNom() . '!');
+        
+        if(new DateTime() >= $sortie->getDateLimiteInscription()) // on ne devrait jamais tomber dans ce cas
+            throw new BLLException("ERREUR DANS LE TOASTER! La date limite d'inscription est dépassée !");
+        
+        // ajout du participant
+        $sortie->addParticipant($participant);
+        
+        // mise à jour de l'état de la sortie
+        if(count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax())
+            $this->cloturer($sortie);
     }
     
     public function annuler(Sortie $sortie): void {
@@ -139,7 +166,7 @@ class SortieEtatsManager {
         if($transition === Etat::TRANSITION_ETAT_INITIAL) // met à état initial
             $this->sortieStateMachine->getMarking($sortie);
         
-        $sortie->setEtatWorkflow($sortie->getEtat());
+        $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
         
         $this->sortieStateMachine->apply($sortie, $transition);
         
