@@ -135,14 +135,27 @@ class SortieController extends AbstractController {
             $sortieTransitionsManager->sinscrire($sortie, $participantConnecte);
         } catch(BLLException $e) {
             $this->addFlash('error', $e->getMessage());
-//            return $this->redirectToRoute('app_main_home');
-            return $this->redirectToRoute('app_sortie_detail', [
-                'id' => $id
-            ]);
+            return $this->redirectToRoute('app_main_home');
+//            return $this->redirectToRoute('app_sortie_detail', [
+//                'id' => $id
+//            ]);
         }
         
-        $this->addFlash('success', 'Sortie publiée!');
+        $this->addFlash('success', 'Vous êtes inscrits à la sortie "' . $sortie->getNom() . '" ! Amusez-vous bien !');
         return $this->redirectToRoute('app_main_home');
+//        return $this->redirectToRoute('app_sortie_detail', [
+//            'id' => $id
+//        ]);
+    }
+    
+    #[Route('/sedesister/{id}', name: 'sedesister', methods: ['GET'])]
+    public function seDesister(
+        int                $id,
+        SortieRepository   $sortieRepository,
+        SortieEtatsManager $sortieTransitionsManager,
+        UserInterface      $participantConnecte,
+    ) {
+    
     }
     
     #[Route('/detail/{id}', name: 'detail', methods: ['GET', 'POST'])]
