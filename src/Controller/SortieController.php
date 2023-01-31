@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Sortie;
-use App\Exception\BLLException;
+use App\Form\InscriptionType;
+use App\Form\SearchSortieType;
+use App\Form\SortieFiltreType;
 use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
@@ -22,22 +24,22 @@ use Symfony\Component\Workflow\WorkflowInterface;
 #[Route('/sortie', name: 'app_sortie_')]
 class SortieController extends AbstractController {
     #[Route('/liste', name: 'liste')]
-    public function liste(SortieRepository $sortieRepository, UserInterface $user): Response {
+    public function liste(SortieRepository $sortieRepository,UserInterface $user,Request $request ): Response {
         /** @var  Participant $user */
         $sorties = $sortieRepository->findAllActiveByCampus($user);
 
 
-//        dd($sorties);
-//        dd($sorties);
+        $searchSorties = $this->createForm(SearchSortieType::class);
         return $this->render('sortie/listeSortie.html.twig', [
-            "sorties" => $sorties,
+              'search_form'=>$searchSorties->createView(),
+            'sorties' => $sorties,
         ]);
     }
-    
+
     #[Route('/listeFilstres', name: 'listeFiltres')]
-    public function listeFiltres(SortieRepository $sortieRepository): Response {
+    public  function listeFiltres(SortieRepository $sortieRepository) : Response{
         $sorties = $sortieRepository->findByOrganisateur();
-        
+
         return $this->render('sortie/listeSortie.html.twig', [
             "sorties" => $sorties,
         ]);
@@ -50,58 +52,58 @@ class SortieController extends AbstractController {
     
     #[Route('/creer', name: 'creer', methods: ['GET', 'POST'])]
     public function creerSortie(
-        Request                $request,
+        Request $request,
         EntityManagerInterface $entityManager,
-        WorkflowInterface      $sortieStateMachine,
-        VilleRepository        $villeRepository,
-    
+        WorkflowInterface $sortieStateMachine,
+        VilleRepository $villeRepository,
+
     ): Response {
-        
-        $sortie     = new Sortie();
+
+        $sortie = new Sortie();
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
-        
-        
-        $villes    = $villeRepository->findAll();
+
+
+        $villes = $villeRepository->findAll();
         $villeForm = $this->createForm(VilleType::class,);
         $villeForm->handleRequest($request);
-        
+
         if($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            
-            $etatCreee = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::LABEL_CREEE]);
-            
+
+            $etatCreee = $entityManager->getRepository(Etat::class)->findOneBy(['libelle'=>Etat::LABEL_CREEE]);
+
             //TODO completer
-            
+
             //TODO récuperer la liste des villes
             //$sortie->getLieu()->getVille();
             //TODO récuperer la liste des utilisateur
             //TODO récuperer le campus de l'utilisateur
             //TODO set le lieu pour tester la création
-            
-            
+
+
             //$sortie->setCampus($sortieForm->get('campus')->getData());
             //$sortie->setVille($sortieForm->get('ville')->getData());
-            
+
             // récuperer l'id utilisateur pour définir l'organisateur
             $sortie->setOrganisateur($this->getUser());
             // mettre l'état de la sortie à créer
             // récuperer l'état créée puis l'affecter à la sortie créer
-            
+
             $sortie->setEtat($etatCreee);
             //$sortieStateMachine->
-            
+
             $entityManager->persist($sortie);
             $entityManager->flush();
-            
+
             $this->addFlash('success', 'Votre sortie a bien été créée');
             return $this->redirectToRoute('app_sortie_liste');
-            
+
         }
-        
+
         return $this->render('sortie/creerSortie.html.twig', [
-            'SortieForm' => $sortieForm->createView(), 'sortie' => $sortie,
+            'SortieForm' => $sortieForm->createView(),'sortie'=>$sortie,
         ]);
-        
+
     }
     
     
@@ -116,55 +118,6 @@ class SortieController extends AbstractController {
         $sortieTransitionsManager->publier($sortie);
         
         $this->addFlash('success', 'Sortie publiée!');
-        return $this->redirectToRoute('app_main_home');
-    }
-    
-    
-    #[Route('/sinscrire/{id}', name: 'sinscrire', methods: ['GET'])]
-    public function sinscrire(
-        int                $id,
-        SortieRepository   $sortieRepository,
-        SortieEtatsManager $sortieTransitionsManager,
-        UserInterface      $participantConnecte,
-    ) {
-        $sortie = $sortieRepository->find($id);
-        /** @var Participant $participantConnecte */
-        
-        try {
-            $sortieTransitionsManager->sinscrire($sortie, $participantConnecte);
-        } catch(BLLException $e) {
-            $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('app_main_home');
-//            return $this->redirectToRoute('app_sortie_detail', [
-//                'id' => $id
-//            ]);
-        }
-        
-        $this->addFlash('success', 'Vous êtes inscrit à la sortie "' . $sortie->getNom() . '" ! Amusez-vous bien !');
-        return $this->redirectToRoute('app_main_home');
-//        return $this->redirectToRoute('app_sortie_detail', [
-//            'id' => $id
-//        ]);
-    }
-    
-    #[Route('/sedesinscrire/{id}', name: 'sedesister', methods: ['GET'])]
-    public function seDesister(
-        int                $id,
-        SortieRepository   $sortieRepository,
-        SortieEtatsManager $sortieTransitionsManager,
-        UserInterface      $participantConnecte,
-    ) {
-        $sortie = $sortieRepository->find($id);
-        /** @var Participant $participantConnecte */
-        
-        try {
-            $sortieTransitionsManager->seDesister($sortie, $participantConnecte);
-        } catch(BLLException $e) {
-            $this->addFlash('error', $e->getMessage());
-            return $this->redirectToRoute('app_main_home');
-        }
-        
-        $this->addFlash('success', "Vous n'êtes plus inscrit à la sortie \"" . $sortie->getNom() . '" !');
         return $this->redirectToRoute('app_main_home');
     }
     

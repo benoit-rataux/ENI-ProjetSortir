@@ -8,37 +8,43 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-<div class="container flex justify-center my-5">
-    <table class="border-2 border-gray-400 max-h-[200px] overflow-y-auto">
-        <thead  class="bg-gray-400">
-        <th class="text-center border-2 border-black">Nom de la sortie</th>
-        <th class="text-center border-2 border-black">Date de la Sortie</th>
-        <th class="text-center border-2 border-black">Clôture</th>
-        <th class="text-center border-2 border-black">inscrits/place</th>
-        <th class="text-center border-2 border-black">Etat</th>
-        <th class="text-center border-2 border-black">Inscrit</th>
-        <th class="text-center border-2 border-black">Organisateur</th>
-        <th class="text-center border-2 border-black">Actions</th>
+<div class="container  my-5">
+    <div class="flex justify-center">
+        <div>
+            {{ form(search_form) }}
+        </div>
+        <table class="border-2 border-gray-400 ">
+            <thead  class="bg-gray-400">
+            <th class="text-center border-2 border-black">Nom de la sortie</th>
+            <th class="text-center border-2 border-black">Date de la Sortie</th>
+            <th class="text-center border-2 border-black">Clôture</th>
+            <th class="text-center border-2 border-black">inscrits/place</th>
+            <th class="text-center border-2 border-black">Etat</th>
+            <th class="text-center border-2 border-black">Inscrit</th>
+            <th class="text-center border-2 border-black">Organisateur</th>
+            <th class="text-center border-2 border-black">Actions</th>
 
-        </thead>
-        <tbody>
-        {%  for sortie in sorties  %}
-            <tr>
-                <td class="text-center border-2 border-gray-400">{{ sortie.nom }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.dateHeureDebut | date('d/m/Y  h:i')  }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.dateLimiteInscription | date('d/m/Y ')  }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.nbInscriptionsMax }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.etat.libelle}}</td>
-                <td class="text-center border-2 border-gray-400">non</td>
-                <td class="text-center border-2 border-gray-400"><a href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a></td>
-                <td class="text-center border-2 border-gray-400">
-                    <a href="{{ path('app_sortie_detail',{'id' : sortie.id}) }}">Afficher</a> - se Desister</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {%  for sortie in sorties  %}
+                <tr>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.nom }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.dateHeureDebut | date('d/m/Y  h:i')  }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.dateLimiteInscription | date('d/m/Y ')  }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.nbInscriptionsMax }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.etat.libelle}}</td>
+                    <td class="text-center border-2 border-gray-400">non</td>
+                    <td class="text-center border-2 border-gray-400"><a href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a></td>
+                    <td class="text-center border-2 border-gray-400">
+                        <a href="{{ path('app_sortie_detail',{'id' : sortie.id}) }}">Afficher</a> - se Desister</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <div class="">
+
+    <div type="button" class="border-2 py-3 px-3 border-gray-400 max-w-[150px] rounded-lg my-5 mx-5">
         <a href="{{ path('app_sortie_creer') }}">Créer une sortie</a>
     </div>
 
