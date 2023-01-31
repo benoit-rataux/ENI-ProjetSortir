@@ -24,7 +24,7 @@
             
             <div>
                 <span>Nombre de places: </span>
-                <span class="font-bold">?/{{ sortie.nbInscriptionsMax }}</span>
+                <span class="font-bold">{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</span>
             </div>
             
             <div>
@@ -72,16 +72,16 @@
             {% endif %}
         </div>
     </div>
-        <div class="participants-liste">
-            <ul>
-                {% for participant in sortie.participants %}
-                    <li>
-                        <span>{{ participant.pseudo }}</span>
-                        <span>{{ participant.prenom }} {{ participant.nom }}</span>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
+    <div class="participants-liste">
+        <ul>
+            {% for participant in sortie.participants %}
+                <li>
+                    <span>{{ participant.pseudo }}</span>
+                    <span>{{ participant.prenom }} {{ participant.nom }}</span>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
 
 {% endblock %}
 
