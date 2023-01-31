@@ -57,7 +57,7 @@ class SortieEtatsManager {
     /**
      * @throws BLLException
      */
-    public function seDesister(Sortie $sortie, Participant $participant): void {
+    public function seDesinscrire(Sortie $sortie, Participant $participant): void {
         // mise à jour !
         $this->updateDataCommencer();
         

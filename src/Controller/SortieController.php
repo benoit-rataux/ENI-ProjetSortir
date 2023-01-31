@@ -158,7 +158,7 @@ class SortieController extends AbstractController {
         /** @var Participant $participantConnecte */
         
         try {
-            $sortieTransitionsManager->seDesister($sortie, $participantConnecte);
+            $sortieTransitionsManager->seDesinscrire($sortie, $participantConnecte);
         } catch(BLLException $e) {
             $this->addFlash('error', $e->getMessage());
             return $this->redirectToRoute('app_main_home');
