@@ -9,6 +9,7 @@ use App\Exception\BLLException;
 use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use DateTime;
+use Symfony\Component\Workflow\Exception\LogicException;
 use Symfony\Component\Workflow\WorkflowInterface;
 
 class SortieEtatsManager {
@@ -114,7 +115,12 @@ class SortieEtatsManager {
         $sortiesAReouvrir = $this->sortieRepository->findSortiesAReouvrir();
         
         foreach($sortiesAReouvrir as $sortie) {
-            $this->reouvrir($sortie);
+            try {
+                $this->reouvrir($sortie);
+            } catch(BLLException $e) {
+                //@TODO: envoyer l'erreur dans les logs
+                printf($e->getMessage());
+            }
         }
         
         return $this;
@@ -124,7 +130,12 @@ class SortieEtatsManager {
         $sortiesACloturer = $this->sortieRepository->findSortiesACloturer();
         
         foreach($sortiesACloturer as $sortie) {
-            $this->cloturer($sortie);
+            try {
+                $this->cloturer($sortie);
+            } catch(BLLException $e) {
+                //@TODO: envoyer l'erreur dans les logs
+                printf($e->getMessage());
+            }
         }
         
         return $this;
@@ -134,7 +145,12 @@ class SortieEtatsManager {
         $sortiesCommencees = $this->sortieRepository->findSortiesACommencer();
         
         foreach($sortiesCommencees as $sortie) {
-            $this->commencer($sortie);
+            try {
+                $this->commencer($sortie);
+            } catch(BLLException $e) {
+                //@TODO: envoyer l'erreur dans les logs
+                printf($e->getMessage());
+            }
         }
         
         return $this;
@@ -144,7 +160,12 @@ class SortieEtatsManager {
         $sortiesCommencees = $this->sortieRepository->findSortiesATerminer();
         
         foreach($sortiesCommencees as $sortie) {
-            $this->terminer($sortie);
+            try {
+                $this->terminer($sortie);
+            } catch(BLLException $e) {
+                //@TODO: envoyer l'erreur dans les logs
+                printf($e->getMessage());
+            }
         }
         
         return $this;
@@ -154,7 +175,12 @@ class SortieEtatsManager {
         $sortiesCommencees = $this->sortieRepository->findSortiesAHistoriser();
         
         foreach($sortiesCommencees as $sortie) {
-            $this->historiser($sortie);
+            try {
+                $this->historiser($sortie);
+            } catch(BLLException $e) {
+                //@TODO: envoyer l'erreur dans les logs
+                printf($e->getMessage());
+            }
         }
         
         return $this;
@@ -162,18 +188,32 @@ class SortieEtatsManager {
     
     ////////////////////////////////
     
-    private function applyTransition(Sortie $sortie, string $transition) {
+    /**
+     * @param Sortie $sortie
+     * @param string $transition
+     * @return void
+     * @throws BLLException
+     */
+    private function applyTransition(Sortie $sortie, string $transition): void {
         if($transition === Etat::TRANSITION_ETAT_INITIAL) // met à état initial
             $this->sortieStateMachine->getMarking($sortie);
         
         $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
         
-        $this->sortieStateMachine->apply($sortie, $transition);
-        
-        $etatLibelle = $sortie->getEtatWorkflow();
-        $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
-        $sortie->setEtat($etat);
-        
-        $this->sortieRepository->save($sortie, true);
+        try {
+            $this->sortieStateMachine->apply($sortie, $transition);
+            
+            $etatLibelle = $sortie->getEtatWorkflow();
+            $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
+            $sortie->setEtat($etat);
+            
+            $this->sortieRepository->save($sortie, true);
+        } catch(LogicException $e) {
+            throw new BLLException(
+                'impossible de ' . $transition . ' ' .
+                'la sortie "' . $sortie->getNom() . '" ' .
+                '[' . $sortie->getEtatWorkflow() . '] '
+            );
+        }
     }
 }
