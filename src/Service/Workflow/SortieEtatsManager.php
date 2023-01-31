@@ -142,6 +142,20 @@ class SortieEtatsManager {
     
     ////// Routines de vérification et mise à jour de l'état des
     /// sorties dans la base de données
+    
+    /** assure la cohérence des états des sorties dans la base de données
+     * @return void
+     */
+    public function updateData(): void {
+        $this
+            ->updateDataReouvrir()
+            ->updateDataCloturer()
+            ->updateDataCommencer()
+            ->updateDataTerminer()
+            ->updateDataHistoriser()
+        ;
+    }
+    
     public function updateDataReouvrir(): self {
         $sortiesAReouvrir = $this->sortieRepository->findSortiesAReouvrir();
         
@@ -206,7 +220,8 @@ class SortieEtatsManager {
         $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
         
         try {
-            $this->sortieStateMachine->apply($sortie, $transition);
+            if($this->sortieStateMachine->can($sortie, $transition))
+                $this->sortieStateMachine->apply($sortie, $transition);
             
             $etatLibelle = $sortie->getEtatWorkflow();
             $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
@@ -214,6 +229,7 @@ class SortieEtatsManager {
             
             $this->sortieRepository->save($sortie, true);
         } catch(LogicException $e) {
+            printf($e->getMessage());
             printf(
                 'impossible de ' . $transition . ' ' .
                 'la sortie "' . $sortie->getNom() . '" ' .
