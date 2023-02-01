@@ -10,6 +10,7 @@ use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
 use App\Repository\VilleRepository;
+use App\Security\Voter\SortieVoter;
 use App\Service\Workflow\SortieEtatsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -112,6 +113,8 @@ class SortieController extends AbstractController {
         SortieEtatsManager $sortieTransitionsManager,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::PUBLIER, $sortie, 'Dinaaaaaayded !!');
         
         $sortieTransitionsManager->publier($sortie);
         
@@ -128,6 +131,9 @@ class SortieController extends AbstractController {
         UserInterface      $participantConnecte,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::SINSCRIRE, $sortie, 'Dinaaaaaayded !!');
+        
         /** @var Participant $participantConnecte */
         
         try {
@@ -155,6 +161,9 @@ class SortieController extends AbstractController {
         UserInterface      $participantConnecte,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::SE_DESISTER, $sortie, 'Dinaaaaaayded !!');
+        
         /** @var Participant $participantConnecte */
         
         try {
@@ -176,6 +185,9 @@ class SortieController extends AbstractController {
         UserInterface      $participantConnecte,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::ANNULER, $sortie, 'Dinaaaaaayded !!');
+        
         /** @var Participant $participantConnecte */
         
         try {
@@ -198,6 +210,8 @@ class SortieController extends AbstractController {
         EntityManagerInterface $entityManager,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::AFFICHER, $sortie, 'Dinaaaaaayded !!');
         
         if(!$sortie) {
             $this->addFlash('error', 'La sortie n\'existe pas');
