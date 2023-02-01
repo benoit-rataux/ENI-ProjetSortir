@@ -3,46 +3,81 @@
 {% block title %}Hello SortieController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <style>
+        .example-wrapper {
+            margin: 1em auto;
+            max-width: 800px;
+            width: 95%;
+            font: 18px/1.5 sans-serif;
+        }
 
-<div class="container flex justify-center my-5">
-    <table class="border-2 border-gray-400 max-h-[200px] overflow-y-auto">
-        <thead  class="bg-gray-400">
-        <th class="text-center border-2 border-black">Nom de la sortie</th>
-        <th class="text-center border-2 border-black">Date de la Sortie</th>
-        <th class="text-center border-2 border-black">Clôture</th>
-        <th class="text-center border-2 border-black">inscrits/place</th>
-        <th class="text-center border-2 border-black">Etat</th>
-        <th class="text-center border-2 border-black">Inscrit</th>
-        <th class="text-center border-2 border-black">Organisateur</th>
-        <th class="text-center border-2 border-black">Actions</th>
-
-        </thead>
-        <tbody>
-        {%  for sortie in sorties  %}
+        .example-wrapper code {
+            background: #F5F5F5;
+            padding: 2px 6px;
+        }
+    </style>
+    
+    <div class="container flex justify-center my-5">
+        <table class="border-2 border-gray-400 max-h-[200px] overflow-y-auto">
+            <thead class="bg-gray-400">
             <tr>
-                <td class="text-center border-2 border-gray-400">{{ sortie.nom }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.dateHeureDebut | date('d/m/Y  h:i')  }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.dateLimiteInscription | date('d/m/Y ')  }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.nbInscriptionsMax }}</td>
-                <td class="text-center border-2 border-gray-400">{{ sortie.etat.libelle}}</td>
-                <td class="text-center border-2 border-gray-400">non</td>
-                <td class="text-center border-2 border-gray-400"><a href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a></td>
-                <td class="text-center border-2 border-gray-400">
-                    <a href="{{ path('app_sortie_detail',{'id' : sortie.id}) }}">Afficher</a> - se Desister</td>
+                <th class="text-center border-2 border-black">Nom de la sortie</th>
+                <th class="text-center border-2 border-black">Date de la Sortie</th>
+                <th class="text-center border-2 border-black">Clôture</th>
+                <th class="text-center border-2 border-black">inscrits/place</th>
+                <th class="text-center border-2 border-black">Etat</th>
+                <th class="text-center border-2 border-black">Inscrit</th>
+                <th class="text-center border-2 border-black">Organisateur</th>
+                <th class="text-center border-2 border-black">Actions</th>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <div class="">
-        <a href="{{ path('app_sortie_creer') }}">Créer une sortie</a>
+            </thead>
+            <tbody>
+            {% for sortie in sorties %}
+                <tr>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.nom }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.dateHeureDebut | date('d/m/Y  h:i') }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.dateLimiteInscription | date('d/m/Y ') }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.nbInscriptionsMax }}</td>
+                    <td class="text-center border-2 border-gray-400">{{ sortie.etat.libelle }}</td>
+                    <td class="text-center border-2 border-gray-400">non</td>
+                    <td class="text-center border-2 border-gray-400"><a
+                                href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a>
+                    </td>
+                    <td class="text-center border-2 border-gray-400">
+                        {% if is_granted('SORTIE_MODIFIER', sortie) %}
+                            <a href="{{ path('',{'id' : sortie.id}) }}">Modifier</a>
+                        {% endif %}
+                        
+                        {% if is_granted('SORTIE_PUBLIER', sortie) %}
+                            <a href="{{ path('app_sortie_publier',{'id' : sortie.id}) }}">Publier</a>
+                        {% endif %}
+                        
+                        {% if is_granted('SORTIE_ANNULER', sortie) %}
+                            <a href="{{ path('app_sortie_annuler',{'id' : sortie.id}) }}">Annuler</a>
+                        {% endif %}
+                        
+                        {% if is_granted('SORTIE_AFFICHER', sortie) %}
+                            <a href="{{ path('app_sortie_detail',{'id' : sortie.id}) }}">Afficher</a>
+                        {% endif %}
+                        
+                        {% if is_granted('SORTIE_SINSCRIRE', sortie) %}
+                            <a href="{{ path('app_sortie_sinscrire',{'id' : sortie.id}) }}">s'inscrire</a>
+                        {% endif %}
+                        
+                        {% if is_granted('SORTIE_SE_DESISTER', sortie) %}
+                            <a href="{{ path('app_sortie_sedesister',{'id' : sortie.id}) }}">se désinscrire</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="">
+            <a href="{{ path('app_sortie_creer') }}">Créer une sortie</a>
+        </div>
+    
     </div>
-
-</div>
 
 
 
