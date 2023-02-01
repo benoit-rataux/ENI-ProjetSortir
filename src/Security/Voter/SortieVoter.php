@@ -77,15 +77,24 @@ class SortieVoter extends Voter {
                 return in_array($sortie->getEtat()->getLibelle(), [
                         Etat::LABEL_OUVERTE,
                     ])
-                    && !in_array($user, (array)$sortie->getParticipants());
+                    && !$this->isInscrit($user, $sortie);
             case self::SE_DESISTER:
                 return in_array($sortie->getEtat()->getLibelle(), [
                         Etat::LABEL_OUVERTE,
                     ])
-                    && in_array($user, (array)$sortie->getParticipants());
+                    && $this->isInscrit($user, $sortie);
             default:
                 return false;
         }
         /** @formatter:on */
+    }
+    
+    private function isInscrit(Participant $user, Sortie $sortie) {
+        foreach($sortie->getParticipants() as $participant) {
+            if($user->getId() === $participant->getId())
+                return true;
+        }
+        
+        return false;
     }
 }
