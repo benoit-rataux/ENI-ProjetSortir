@@ -65,6 +65,7 @@ class SortieVoter extends Voter {
                 return in_array($sortie->getEtat()->getLibelle(), [
                     Etat::LABEL_OUVERTE,
                     Etat::LABEL_CLOTUREE,
+                    Etat::LABEL_ANNULEE,
                     Etat::LABEL_EN_COURS,
                 ]);
             case self::ANNULER:
