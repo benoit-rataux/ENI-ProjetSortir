@@ -46,8 +46,9 @@
                     
                     <td class="text-center border-2 border-gray-400">
                         {% if is_granted('SORTIE_MODIFIER', sortie) %}
+                            {# J'ai mis la route vers la liste en attendant la route vers app_sortie_modifier ;)#}
                             <div>
-                                <a class="hover:bg-gray-200 rounded" href="{{ path('',{'id' : sortie.id}) }}">Modifier</a>
+                                <a class="hover:bg-gray-200 rounded" href="{{ path('app_sortie_liste',{'id' : sortie.id}) }}">Modifier</a>
                             </div>
                         {% endif %}
                         

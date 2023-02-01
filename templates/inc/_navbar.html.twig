@@ -1,9 +1,9 @@
 <nav>
     <ul class="flex flex-row">
         {% if app.user %}
-            <li class="mx-2"><a href={{ path('app_main_home') }}>accueil</a></li>
-            <li class="mx-2"><a href="{{ path('app_profil_monprofil') }}">mon profil {{ app.user.pseudo }}</a></li>
-            <li class="mx-2"><a href="{{ path('app_logout') }}">se déconnecter</a></li>
+            <li class="mx-2 hover:text-blue-900"><a href={{ path('app_main_home') }}>Accueil</a></li>
+            <li class="mx-2 hover:text-blue-900"><a href="{{ path('app_profil_monprofil') }}">Mon profil : {{ app.user.pseudo }}</a></li>
+            <li class="mx-2 hover:text-blue-900"><a href="{{ path('app_logout') }}">Se déconnecter</a></li>
         {% endif %}
     </ul>
 </nav>
