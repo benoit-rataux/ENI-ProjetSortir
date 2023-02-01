@@ -35,7 +35,7 @@ class SortieController extends AbstractController {
         ]);
     }
     
-    #[Route('/listeFilstres', name: 'listeFiltres')]
+    #[Route('/listeFiltres', name: 'listeFiltres')]
     public function listeFiltres(SortieRepository $sortieRepository): Response {
         $sorties = $sortieRepository->findByOrganisateur();
         
@@ -72,21 +72,21 @@ class SortieController extends AbstractController {
             $etatCreee = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::LABEL_CREEE]);
             
             //TODO completer
-            
+            //TODO mettre à zéro le nombre initial d'inscrit pour les sorties
+            $sortie->setNbInscriptionsMax(0);
             //TODO récuperer la liste des villes
             //$sortie->getLieu()->getVille();
-            //TODO récuperer la liste des utilisateur
+            //TODO récuperer l'organisateur
+            $organisateur = $entityManager->getRepository(Participant::class)->find($this->getUser()->getId());
             //TODO récuperer le campus de l'utilisateur
+            $sortie->setCampus($this->getUser()->getCampus());
             //TODO set le lieu pour tester la création
-            
-            
-            //$sortie->setCampus($sortieForm->get('campus')->getData());
-            //$sortie->setVille($sortieForm->get('ville')->getData());
-            
+
             // récuperer l'id utilisateur pour définir l'organisateur
-            $sortie->setOrganisateur($this->getUser());
+            $sortie->setOrganisateur($organisateur);
+
             // mettre l'état de la sortie à créer
-            // récuperer l'état créée puis l'affecter à la sortie créer
+            // récuperer l'état créée puis l'affecter à la sortie créée
             
             $sortie->setEtat($etatCreee);
             //$sortieStateMachine->
