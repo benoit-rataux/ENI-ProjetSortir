@@ -31,7 +31,7 @@ class SortieRepository extends ServiceEntityRepository {
             ->andWhere(':today > sortie.dateLimiteInscription')
             ->groupBy('sortie.id, sortie.nbInscriptionsMax')
             ->andHaving($qb->expr()->gte(
-                'COUNT(participant)', 'sortie.nbInscriptionsMax'
+                'COUNT(participant)', 'sortie.nbInscriptionsMax',
             ))
             ->setParameter('etatCloturee', Etat::LABEL_CLOTUREE)
             ->setParameter('today', (new DateTime())->format('Y-m-d'))
@@ -48,7 +48,7 @@ class SortieRepository extends ServiceEntityRepository {
             ->setParameter('today', (new DateTime())->format('Y-m-d'))
             ->groupBy('sortie.id, sortie.nbInscriptionsMax')
             ->andHaving($qb->expr()->lt(
-                'COUNT(participant)', 'sortie.nbInscriptionsMax'
+                'COUNT(participant)', 'sortie.nbInscriptionsMax',
             ))
         ;
         
