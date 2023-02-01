@@ -13,10 +13,11 @@
 
             {{ form_widget(SortieForm) }}
 
-            <button class="border-2">Enregistrer</button>
-
-            {# Publier la sortie #}
-            {# Annuler la création #}
+            {# <button class="btn border-2">Enregistrer</button> #}
+            {# <button class="btn border-2">Publier la sortie</button> #}
+            <div class="bg-gray-300 hover:bg-red-300 text-white font-bold py-2 px-4 rounded">
+                <a href="{{ path('app_sortie_liste') }}">Annuler</a>
+            </div>
 
             {{ form_end(SortieForm) }}
 
