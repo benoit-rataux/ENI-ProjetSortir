@@ -72,8 +72,11 @@ class SortieController extends AbstractController {
             $etatCreee = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::LABEL_CREEE]);
             
             //TODO completer
-            //TODO mettre à zéro le nombre initial d'inscrit pour les sorties
-            $sortie->setNbInscriptionsMax(0);
+
+            //Pas nécessaire mets à zéro dans la bdd !!!
+            /* mettre à zéro le nombre initial d'inscrit pour les sorties
+            $sortie->setNbInscriptionsMax();*/
+
             //TODO récuperer la liste des villes
             //$sortie->getLieu()->getVille();
             //TODO récuperer l'organisateur
