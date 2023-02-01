@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Service\Workflow\SortieEtatsManager;
+use Exception;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -30,7 +31,7 @@ class UpdateSortiesEtatCommand extends Command {
     }
     
     protected function execute(InputInterface $input, OutputInterface $output): int {
-        $io = new SymfonyStyle($input, $output);
+        $this->io = new SymfonyStyle($input, $output);
 //        $arg1 = $input->getArgument('arg1');
 //
 //        if($arg1) {
@@ -41,17 +42,24 @@ class UpdateSortiesEtatCommand extends Command {
 //            // ...
 //        }
         
-        //@TODO rafiner un peu le retour dans la console
-        $this->sortieEtatsManager
-            ->updateDataReouvrir()
-            ->updateDataCloturer()
-            ->updateDataCommencer()
-            ->updateDataTerminer()
-            ->updateDataHistoriser()
-        ;
+        $this->executeUpdate('Reouvrir');
+        $this->executeUpdate('Cloturer');
+        $this->executeUpdate('Commencer');
+        $this->executeUpdate('Terminer');
+        $this->executeUpdate('Historiser');
         
-        $io->success('You have a new command! Now make it your own! Pass --help to see your options.');
+        $this->io->success('Mise à jour des états des sorties TERMINÉ!');
         
         return Command::SUCCESS;
+    }
+    
+    private function executeUpdate(string $transition) {
+        $methodName = "updateData$transition";
+        
+        if(!is_callable([$this->sortieEtatsManager, $methodName]))
+            throw new Exception("$methodName is not callable!");
+        
+        $this->io->text("-> execute $methodName()");
+        $this->sortieEtatsManager->$methodName();
     }
 }

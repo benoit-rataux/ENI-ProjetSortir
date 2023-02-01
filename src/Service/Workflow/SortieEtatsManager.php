@@ -57,7 +57,7 @@ class SortieEtatsManager {
     /**
      * @throws BLLException
      */
-    public function seDesister(Sortie $sortie, Participant $participant): void {
+    public function seDesinscrire(Sortie $sortie, Participant $participant): void {
         // mise à jour !
         $this->updateDataCommencer();
         
@@ -75,7 +75,16 @@ class SortieEtatsManager {
         $this->reouvrir($sortie);
     }
     
-    public function annuler(Sortie $sortie): void {
+    public function annuler(Sortie $sortie, Participant $participant) {
+        // mise à jour !
+        $this->updateDataCommencer();
+        
+        if($participant->getId() !== $sortie->getOrganisateur()->getId())
+            throw new BLLException("Vous ne pouvez annuler que les sorties dont vous êtes l'organisateur ! Tabarnouche !");
+        
+        if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_ANNULER))
+            throw new BLLException("Vous ne pouvez pas annuler la sortie car elle est : " . $sortie->getEtat()->getLibelle());
+        
         $this->applyTransition($sortie, Etat::TRANSITION_ANNULER);
     }
     
@@ -133,6 +142,20 @@ class SortieEtatsManager {
     
     ////// Routines de vérification et mise à jour de l'état des
     /// sorties dans la base de données
+    
+    /** assure la cohérence des états des sorties dans la base de données
+     * @return void
+     */
+    public function updateData(): void {
+        $this
+            ->updateDataReouvrir()
+            ->updateDataCloturer()
+            ->updateDataCommencer()
+            ->updateDataTerminer()
+            ->updateDataHistoriser()
+        ;
+    }
+    
     public function updateDataReouvrir(): self {
         $sortiesAReouvrir = $this->sortieRepository->findSortiesAReouvrir();
         
@@ -197,7 +220,8 @@ class SortieEtatsManager {
         $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
         
         try {
-            $this->sortieStateMachine->apply($sortie, $transition);
+            if($this->sortieStateMachine->can($sortie, $transition))
+                $this->sortieStateMachine->apply($sortie, $transition);
             
             $etatLibelle = $sortie->getEtatWorkflow();
             $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
@@ -205,6 +229,7 @@ class SortieEtatsManager {
             
             $this->sortieRepository->save($sortie, true);
         } catch(LogicException $e) {
+            printf($e->getMessage());
             printf(
                 'impossible de ' . $transition . ' ' .
                 'la sortie "' . $sortie->getNom() . '" ' .
