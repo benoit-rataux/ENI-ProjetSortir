@@ -9,10 +9,20 @@
 </style>
 
 <div class="container  my-5">
+    <div class="flex justify-center my-5">
+        {{ form_start(searchForm) }}
+
+        {{ form_widget(searchForm) }}
+
+        <button class="border-2">Rechercher</button>
+
+         Publier la sortie
+         Annuler la création
+
+        {{ form_end(searchForm) }}
+    </div>
     <div class="flex justify-center">
-        <div>
-            {{ form(search_form) }}
-        </div>
+
         <table class="border-2 border-gray-400 ">
             <thead  class="bg-gray-400">
             <th class="text-center border-2 border-black">Nom de la sortie</th>

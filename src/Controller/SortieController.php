@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Etat;
 use App\Entity\Participant;
+use App\Entity\SearchSortie;
 use App\Entity\Sortie;
 use App\Exception\BLLException;
+use App\Form\SearchSortieType;
 use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
@@ -22,15 +24,23 @@ use Symfony\Component\Workflow\WorkflowInterface;
 #[Route('/sortie', name: 'app_sortie_')]
 class SortieController extends AbstractController {
     #[Route('/liste', name: 'liste')]
-    public function liste(SortieRepository $sortieRepository, UserInterface $user): Response {
+    public function liste(SortieRepository $sortieRepository, UserInterface $user,Request $request): Response {
         /** @var  Participant $user */
         $sorties = $sortieRepository->findAllActiveByCampus($user);
 
+        $search = new SearchSortie();
+        $searchForm = $this->createForm(SearchSortieType::class,$search);
+        $searchForm->handleRequest($request);
 
-//        dd($sorties);
-//        dd($sorties);
+        if($searchForm->isSubmitted()){
+            $scriteres = $searchForm->getData();
+            dd($scriteres);
+        }
+
+
         return $this->render('sortie/listeSortie.html.twig', [
-            "sorties" => $sorties,
+            'sorties' => $sorties,
+            'searchForm' => $searchForm->createView()
         ]);
     }
     
