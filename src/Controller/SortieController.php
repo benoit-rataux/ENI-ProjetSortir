@@ -203,11 +203,8 @@ class SortieController extends AbstractController {
     
     #[Route('/detail/{id}', name: 'detail', methods: ['GET', 'POST'])]
     public function detail(
-        int                    $id,
-        UserInterface          $user,
-        Request                $request,
-        SortieRepository       $sortieRepository,
-        EntityManagerInterface $entityManager,
+        int              $id,
+        SortieRepository $sortieRepository,
     ) {
         $sortie = $sortieRepository->find($id);
         // Controle les droits utilisateurs pour cette action
