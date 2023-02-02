@@ -17,6 +17,7 @@ framework:
 
       places:
         - creee
+        - supprimee
         - ouverte
         - cloturee
         - en_cours
@@ -28,6 +29,10 @@ framework:
         modifier:
           from: creee
           to: creee
+
+        supprimer:
+          from: creee
+          to: supprimee
 
         publier:
           from: creee

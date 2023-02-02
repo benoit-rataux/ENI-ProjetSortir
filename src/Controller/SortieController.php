@@ -59,7 +59,7 @@ class SortieController extends AbstractController {
         if($sortieForm->isSubmitted() && $sortieForm->isValid()) {
             try {
                 $sortieEtatsManager->creer($sortie, $user);
-                $this->addFlash('success', 'Votre sortie a bien été créée');
+                $this->addFlash('success', 'Votre sortie "' . $sortie->getNom() . '" a bien été créée');
             } catch(BLLException $e) {
                 $this->addFlash('error', $e->getMessage());
             }
@@ -88,7 +88,7 @@ class SortieController extends AbstractController {
         if($sortieForm->isSubmitted() && $sortieForm->isValid()) {
             try {
                 $sortieEtatsManager->modifier($sortie);
-                $this->addFlash('success', 'Votre sortie a bien été créée');
+                $this->addFlash('success', 'Votre sortie "' . $sortie->getNom() . '" a bien été créée');
             } catch(BLLException $e) {
                 $this->addFlash('error', $e->getMessage());
             }
@@ -98,6 +98,24 @@ class SortieController extends AbstractController {
         return $this->render('sortie/creerSortie.html.twig', [
             'SortieForm' => $sortieForm->createView(), 'sortie' => $sortie,
         ]);
+    }
+    
+    #[Route('/supprimer/{id}', name: 'supprimer', methods: ['GET'])]
+    public function supprimer(
+        Sortie             $sortie,
+        SortieEtatsManager $sortieEtatsManager,
+    ) {
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::SUPPRIMER, $sortie, 'Dinaaaaaayded !!');
+        
+        try {
+            $sortieEtatsManager->supprimer($sortie);
+            $this->addFlash('success', 'Votre sortie "' . $sortie->getNom() . '" a bien été supprimée');
+        } catch(BLLException $e) {
+            $this->addFlash('error', $e->getMessage());
+        }
+        
+        return $this->redirectToRoute('app_main_home');
     }
     
     #[Route('/publier/{id}', name: 'publier', methods: ['GET'])]
@@ -110,7 +128,7 @@ class SortieController extends AbstractController {
         
         $sortieManager->publier($sortie);
         
-        $this->addFlash('success', 'Sortie ' . $sortie->getNom() . ' publiée!');
+        $this->addFlash('success', 'Votre sortie "' . $sortie->getNom() . '" a bien étée publiée!');
         return $this->redirectToRoute('app_main_home');
     }
     

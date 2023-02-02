@@ -36,6 +36,13 @@ class SortieEtatsManager {
         $this->appliquerModifications($sortie, Etat::TRANSITION_MODIFIER);
     }
     
+    public function supprimer(Sortie $sortie): void {
+        if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_SUPPRIMER))
+            throw new BLLException('Impossible de supprimer la sortie ' . $sortie->getNom());
+        
+        $this->sortieRepository->remove($sortie, true);
+    }
+    
     public function publier(Sortie $sortie): void {
         $this->appliquerModifications($sortie, Etat::TRANSITION_PUBLIER);
     }
