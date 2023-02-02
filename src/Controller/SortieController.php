@@ -12,6 +12,7 @@ use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
 use App\Repository\VilleRepository;
+use App\Security\Voter\SortieVoter;
 use App\Service\Workflow\SortieEtatsManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -44,7 +45,7 @@ class SortieController extends AbstractController {
         ]);
     }
     
-    #[Route('/listeFilstres', name: 'listeFiltres')]
+    #[Route('/listeFiltres', name: 'listeFiltres')]
     public function listeFiltres(SortieRepository $sortieRepository): Response {
         $sorties = $sortieRepository->findByOrganisateur();
         
@@ -81,21 +82,24 @@ class SortieController extends AbstractController {
             $etatCreee = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::LABEL_CREEE]);
             
             //TODO completer
-            
+
+            //Pas nécessaire mets à zéro dans la bdd !!!
+            /* mettre à zéro le nombre initial d'inscrit pour les sorties
+            $sortie->setNbInscriptionsMax();*/
+
             //TODO récuperer la liste des villes
             //$sortie->getLieu()->getVille();
-            //TODO récuperer la liste des utilisateur
+            //TODO récuperer l'organisateur
+            $organisateur = $entityManager->getRepository(Participant::class)->find($this->getUser()->getId());
             //TODO récuperer le campus de l'utilisateur
+            $sortie->setCampus($this->getUser()->getCampus());
             //TODO set le lieu pour tester la création
-            
-            
-            //$sortie->setCampus($sortieForm->get('campus')->getData());
-            //$sortie->setVille($sortieForm->get('ville')->getData());
-            
+
             // récuperer l'id utilisateur pour définir l'organisateur
-            $sortie->setOrganisateur($this->getUser());
+            $sortie->setOrganisateur($organisateur);
+
             // mettre l'état de la sortie à créer
-            // récuperer l'état créée puis l'affecter à la sortie créer
+            // récuperer l'état créée puis l'affecter à la sortie créée
             
             $sortie->setEtat($etatCreee);
             //$sortieStateMachine->
@@ -122,6 +126,8 @@ class SortieController extends AbstractController {
         SortieEtatsManager $sortieTransitionsManager,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::PUBLIER, $sortie, 'Dinaaaaaayded !!');
         
         $sortieTransitionsManager->publier($sortie);
         
@@ -138,6 +144,9 @@ class SortieController extends AbstractController {
         UserInterface      $participantConnecte,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::SINSCRIRE, $sortie, 'Dinaaaaaayded !!');
+        
         /** @var Participant $participantConnecte */
         
         try {
@@ -165,6 +174,9 @@ class SortieController extends AbstractController {
         UserInterface      $participantConnecte,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::SE_DESISTER, $sortie, 'Dinaaaaaayded !!');
+        
         /** @var Participant $participantConnecte */
         
         try {
@@ -186,6 +198,9 @@ class SortieController extends AbstractController {
         UserInterface      $participantConnecte,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::ANNULER, $sortie, 'Dinaaaaaayded !!');
+        
         /** @var Participant $participantConnecte */
         
         try {
@@ -201,13 +216,12 @@ class SortieController extends AbstractController {
     
     #[Route('/detail/{id}', name: 'detail', methods: ['GET', 'POST'])]
     public function detail(
-        int                    $id,
-        UserInterface          $user,
-        Request                $request,
-        SortieRepository       $sortieRepository,
-        EntityManagerInterface $entityManager,
+        int              $id,
+        SortieRepository $sortieRepository,
     ) {
         $sortie = $sortieRepository->find($id);
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::AFFICHER, $sortie, 'Dinaaaaaayded !!');
         
         if(!$sortie) {
             $this->addFlash('error', 'La sortie n\'existe pas');

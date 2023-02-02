@@ -3,7 +3,7 @@
 {% block title %}Connexion!{% endblock %}
 
 {% block body %}
-    <form method="post">
+    <form method="post" class="grid place-items-center ">
         {% if error %}
             <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
         {% endif %}
@@ -16,10 +16,10 @@
         
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
         <label for="inputMail">Identifiant</label>
-        <input type="text" value="{{ last_username }}" name="mail" id="inputMail" class="form-control"
+        <input type="text" value="{{ last_username }}" name="mail" id="inputMail" class="form-control py-2 px-3 w-72"
                autocomplete="username" required autofocus>
         <label for="inputPassword">Password</label>
-        <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password"
+        <input type="password" name="password" id="inputPassword" class="form-control py-2 px-3 w-72" autocomplete="current-password"
                required>
         
         <input type="hidden" name="_csrf_token"
@@ -37,8 +37,8 @@
         </div>
         #}
         
-        <button class="btn btn-lg btn-primary" type="submit">
-            Sign in
+        <button class="bg-gray-300 hover:bg-blue-700 text-white font-bold mt-3 py-2 px-4 rounded" type="submit">
+            Connexion
         </button>
     </form>
 {% endblock %}

@@ -3,21 +3,28 @@
 {% block title %}mon profil{% endblock %}
 
 {% block body %}
-    <div class="profil-photo-container">
-        <img src="{{ asset('resources/images/profil/_default.png') }}" alt="photo profil">
-    </div>
-    
-    <div class="profil-form-container">
-        {{ form_start(profilForm) }}
-        {{ form_widget(profilForm) }}
-        <button>Modifier</button>
-        {{ form_end(profilForm) }}
-    </div>
-    
-    <div class="motpasse-form-container">
-        {{ form_start(motDePasseForm) }}
-        {{ form_widget(motDePasseForm) }}
-        <button>Changer de mot de passe!</button>
-        {{ form_end(motDePasseForm) }}
-    </div>
+    <section class="grid place-items-center mt-2">
+        <div class="profil-photo-container m-2">
+            <img src="{{ asset('resources/images/profil/_default.png') }}" alt="photo profil">
+        </div>
+
+        <div class="profil-form-container m-2">
+            {{ form_start(profilForm) }}
+            {{ form_widget(profilForm) }}
+            <button>Modifier</button>
+            {{ form_end(profilForm) }}
+        </div>
+
+        <div class="motpasse-form-container m-2">
+            {{ form_start(motDePasseForm) }}
+            {{ form_widget(motDePasseForm) }}
+            <button>Changer de mot de passe!</button>
+            {{ form_end(motDePasseForm) }}
+        </div>
+        <div class=" mt-3.5 m-2">
+            <a class="bg-gray-400 hover:bg-gray-500  text-white font-bold py-2 px-4 rounded" href="{{ path('app_sortie_liste') }}">Retour</a>
+        </div>
+
+    </section>
+
 {% endblock %}

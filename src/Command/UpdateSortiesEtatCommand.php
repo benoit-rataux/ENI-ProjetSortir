@@ -13,12 +13,25 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app-eni-sorties:update-db',
+    name       : 'app-eni-sorties:update-db',
     description: 'Add a short description for your command',
 )]
 class UpdateSortiesEtatCommand extends Command {
+    /**
+     * nom correspondant aux méthodes de SortieEtatsManager
+     * effectuant les mises à jours sur la base de données
+     * dans l'ordre d'execution
+     */
+    private const ENCHAINEMENT_UPDATES = [
+        'Reouvrir',
+        'Cloturer',
+        'Commencer',
+        'Terminer',
+        'Historiser',
+    ];
+    
     public function __construct(
-        private readonly SortieEtatsManager $sortieEtatsManager
+        private readonly SortieEtatsManager $sortieEtatsManager,
     ) {
         parent::__construct();
     }
@@ -42,19 +55,18 @@ class UpdateSortiesEtatCommand extends Command {
 //            // ...
 //        }
         
-        $this->executeUpdate('Reouvrir');
-        $this->executeUpdate('Cloturer');
-        $this->executeUpdate('Commencer');
-        $this->executeUpdate('Terminer');
-        $this->executeUpdate('Historiser');
+        foreach(self::ENCHAINEMENT_UPDATES as $updateName) {
+            $updateName = ucfirst(strtolower($updateName));
+            $this->executeUpdate($updateName);
+        }
         
         $this->io->success('Mise à jour des états des sorties TERMINÉ!');
         
         return Command::SUCCESS;
     }
     
-    private function executeUpdate(string $transition) {
-        $methodName = "updateData$transition";
+    private function executeUpdate(string $updateName) {
+        $methodName = "updateData$updateName";
         
         if(!is_callable([$this->sortieEtatsManager, $methodName]))
             throw new Exception("$methodName is not callable!");
