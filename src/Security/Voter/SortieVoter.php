@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class SortieVoter extends Voter {
     public const MODIFIER    = 'SORTIE_MODIFIER';
+    public const SUPPRIMER   = 'SORTIE_SUPPRIMER';
     public const AFFICHER    = 'SORTIE_AFFICHER';
     public const PUBLIER     = 'SORTIE_PUBLIER';
     public const ANNULER     = 'SORTIE_ANNULER';
@@ -21,6 +22,7 @@ class SortieVoter extends Voter {
      */
     private const ATTRIBUTES = [
         self::MODIFIER,
+        self::SUPPRIMER,
         self::AFFICHER,
         self::PUBLIER,
         self::ANNULER,
@@ -56,6 +58,7 @@ class SortieVoter extends Voter {
         /** @formatter:on */
         switch($attribute) {
             case self::MODIFIER:
+            case self::SUPPRIMER:
             case self::PUBLIER:
                 return in_array($sortie->getEtat()->getLibelle(), [
                         Etat::LABEL_CREEE,
