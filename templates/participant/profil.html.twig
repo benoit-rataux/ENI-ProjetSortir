@@ -3,31 +3,40 @@
 {% block title %}profil {{ participant.pseudo }}{% endblock %}
 
 {% block body %}
-    <h2>{{ participant.pseudo }}</h2>
-    <section class="profil-detail">
-        <div class="flex flex-row">
-            <span>Prénom:</span>
-            <span>{{ participant.prenom }}</span>
-        </div>
-        
-        <div class="flex flex-row">
-            <span>Nom:</span>
-            <span>{{ participant.nom }}</span>
-        </div>
-        
-        <div class="flex flex-row">
-            <span>Téléphone:</span>
-            <span>{{ participant.telephone }}</span>
-        </div>
-        
-        <div class="flex flex-row">
-            <span>Email:</span>
-            <span>{{ participant.mail }}</span>
-        </div>
-        
-        <div class="flex flex-row">
-            <span>Campus:</span>
-            <span>{{ participant.campus.nom }}</span>
-        </div>
+    <section class="grid place-items-center mt-2">
+
+        <h2 class="text-gray-800 text-2xl">{{ participant.pseudo }}</h2>
+
+        <section class="profil-detail">
+            <div class="flex flex-row">
+                <span>Prénom:</span>
+                <span>{{ participant.prenom }}</span>
+            </div>
+
+            <div class="flex flex-row">
+                <span>Nom:</span>
+                <span>{{ participant.nom }}</span>
+            </div>
+
+            <div class="flex flex-row">
+                <span>Téléphone:</span>
+                <span>{{ participant.telephone }}</span>
+            </div>
+
+            <div class="flex flex-row">
+                <span>Email:</span>
+                <span>{{ participant.mail }}</span>
+            </div>
+
+            <div class="flex flex-row">
+                <span>Campus:</span>
+                <span>{{ participant.campus.nom }}</span>
+            </div>
+
+            <div class=" mt-3.5">
+                <a class="bg-gray-400 hover:bg-gray-500  text-white font-bold py-2 px-4 rounded" href="{{ path('app_sortie_liste') }}">Retour</a>
+            </div>
+        </section>
+
     </section>
 {% endblock %}

@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\DateIntervalType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -27,6 +28,24 @@ class SortieType extends AbstractType
                 'nom',
                 TextType::class, [
                     'label' => 'Nom de la sortie',
+                'attr' => [
+                    'class' => '
+                            form-control
+                            px-1
+                            py-1
+                            mb-3
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                        '
+                ]
                     ])
 
             //Date et heure
@@ -35,6 +54,24 @@ class SortieType extends AbstractType
                     'html5' => true,
                     'widget' => 'single_text',
                     'label' => 'Date et heure de la sortie : ',
+                    'attr' => [
+                        'class' => '
+                            form-control
+                            px-1
+                            py-1
+                            mb-3
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                        '
+                    ]
                     ])
 
             //Date limite d'inscription
@@ -44,6 +81,24 @@ class SortieType extends AbstractType
                     'html5' => true,
                     'widget' => 'single_text',
                     'label' => 'Date limite d\'inscription',
+                'attr' => [
+                    'class' => '
+                            form-control
+                            px-1
+                            py-1
+                            mb-3
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                        '
+                ]
                     ])
 
             //Nombre de place
@@ -51,7 +106,26 @@ class SortieType extends AbstractType
                 'nbInscriptionsMax',
                 IntegerType::class, [
                     'label' => 'Nombre de places : ',
-                    ])
+                    'attr' => [
+                        'min' => '1',
+                        'max' => '50',
+                        'class' => '
+                            form-control
+                            px-1
+                            py-1
+                            mb-3
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                        '
+                    ]])
 
             //Duree
             ->add(
@@ -59,6 +133,24 @@ class SortieType extends AbstractType
                 IntegerType::class, [
                     'label' => 'Duree : ',
                     'data' => '60',
+                    'attr' => [
+                        'class' => '
+                            form-control
+                            px-1
+                            py-1
+                            mb-3
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                        '
+                    ]
                     ])
 
             //Description et infos
@@ -66,10 +158,32 @@ class SortieType extends AbstractType
                 'infosSortie',
                 TextAreaType::class,[
                     'label' => 'Description et infos : ',
+                    'attr' => [
+                        'class' => '
+                            form-control
+                            block
+                            w-full
+                            px-3
+                            py-1.5
+                            mb-3
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                          ',
+                        'rows'=> 5,
+                        'placeholder' => 'Visite d\'un musée, balade à vélo, ...',
+                    ]
                     ])
 
             //Campus
-            ->add(
+/*            ->add(
                 'campus',
                 EntityType::class,[
                     'label' => 'Campus',
@@ -77,7 +191,7 @@ class SortieType extends AbstractType
                     'choice_label' => 'nom',
                 ]
 
-            )
+            )*/
 
             //Lieu
             ->add(
@@ -85,6 +199,28 @@ class SortieType extends AbstractType
                 EntityType::class,[
                     'class'=>Lieu::class,
                     'choice_label' => 'nom',
+                'attr' => [
+                    'class' => '
+                            form-control
+                            block
+                            w-full
+                            px-3
+                            py-1.5
+                            mb-3
+                            text-base
+                            font-normal
+                            text-gray-700
+                            bg-white bg-clip-padding
+                            border border-solid border-gray-300
+                            rounded
+                            transition
+                            ease-in-out
+                            m-0
+                            focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none
+                          ',
+                    'rows'=> 5,
+                    'placeholder' => 'Visite d\'un musée, balade à vélo, ...',
+                ]
                 ])
 
             //Ville
@@ -96,6 +232,20 @@ class SortieType extends AbstractType
             - Latitude
             - Longitude
             */
+
+            //Enregistrer
+            ->add('Enregistrer', SubmitType::class, [
+                'label' => 'Enregistrer',
+                'attr' => [
+                    'class'=> 'bg-gray-300 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded',
+                ]])
+
+            //Publier
+            ->add('Publier', SubmitType::class, [
+                'label' => 'Publier',
+                'attr' => [
+                    'class'=> 'bg-gray-300 hover:bg-green-700 text-white font-bold py-2 px-4 rounded',
+                    ]])
 
         ;
     }
