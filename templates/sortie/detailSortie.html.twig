@@ -3,91 +3,95 @@
 {% block title %}{{ sortie.nom }}{% endblock %}
 
 {% block body %}
-    <div class=" my-5">
-        <h2 class="text-center text-2xl text-black">"{{ sortie.nom }}"</h2>
-        <div class="text-center italic">{{ sortie.etat.libelle }}</div>
-    </div>
-    
-    <div class="sortie-detail container flex flex-row ">
-        <div id="sortie-detail-col1 " class="w-1/2 mx-5">
-            <div>
-                <span>Nom de la sortie: </span>
-                <span class="font-bold">{{ sortie.nom }}</span>
+    <section class="container mx-auto">
+        <div class=" my-5">
+            <h2 class="text-center sm:text-4xl text-black ">"{{ sortie.nom }}"</h2>
+            <div class="text-center italic">{{ sortie.etat.libelle }}</div>
+        </div>
+
+        <div class="sortie-detail container flex flex-row ">
+            <div id="sortie-detail-col1 " class="w-1/2 mx-5">
+                <div>
+                    <span>Nom de la sortie: </span>
+                    <span class="font-bold">{{ sortie.nom }}</span>
+                </div>
+
+                <div>
+                    <span>Date limite d'inscription: </span>
+                    <span class="font-bold">{{ sortie.dateLimiteInscription | date('d/m/Y à h:i') }}</span>
+                </div>
+
+                <div>
+                    <span>Date et heure de la sortie: </span>
+                    <span class="font-bold">{{ sortie.dateHeureDebut | date('d/m/Y à h:i') }}</span>
+                </div>
+
+                <div>
+                    <span>Nombre de places: </span>
+                    <span class="font-bold">{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</span>
+                </div>
+
+                <div>
+                    <span>Durée: </span>
+                    <span class="font-bold">{{ sortie.duree }} minutes</span>
+                </div>
+
+                <div>
+                    <span>Description et infos: </span>
+                    <span class="font-bold">{{ sortie.infosSortie }}</span>
+                </div>
             </div>
-            
-            <div>
-                <span>Date limite d'inscription: </span>
-                <span class="font-bold">{{ sortie.dateLimiteInscription | date('d/m/Y à h:i') }}</span>
-            </div>
-            
-            <div>
-                <span>Date et heure de la sortie: </span>
-                <span class="font-bold">{{ sortie.dateHeureDebut | date('d/m/Y à h:i') }}</span>
-            </div>
-            
-            <div>
-                <span>Nombre de places: </span>
-                <span class="font-bold">{{ sortie.participants | length }}/{{ sortie.nbInscriptionsMax }}</span>
-            </div>
-            
-            <div>
-                <span>Durée: </span>
-                <span class="font-bold">{{ sortie.duree }} minutes</span>
-            </div>
-            
-            <div>
-                <span>Description et infos: </span>
-                <span class="font-bold">{{ sortie.infosSortie }}</span>
+
+            <div id="sortie-detail-col2 " class="w-1/2 mx-5">
+                <div>
+                    <span>Campus: </span>
+                    <span class="font-bold">{{ sortie.campus.nom }}</span>
+                </div>
+
+                <div>
+                    <span>Lieu: </span>
+                    <span class="font-bold">{{ sortie.lieu.nom }}</span>
+                </div>
+
+                <div>
+                    <span>Rue: </span>
+                    <span class="font-bold">{{ sortie.lieu.rue }}</span>
+                </div>
+
+                <div>
+                    <span>Code postal: </span>
+                    <span class="font-bold">{{ sortie.lieu.ville.codePostal }}</span>
+                </div>
+
+                {% if sortie.lieu.latitude and sortie.lieu.longitude %}
+                    <div>
+                        <span>Latitude: </span>
+                        <span class="font-bold">{{ sortie.lieu.latitude }}</span>
+                    </div>
+
+                    <div>
+                        <span>Longitude: </span>
+                        <span class="font-bold">{{ sortie.lieu.longitude }}</span>
+                    </div>
+                {% endif %}
             </div>
         </div>
-        
-        <div id="sortie-detail-col2 " class="w-1/2 mx-5">
-            <div>
-                <span>Campus: </span>
-                <span class="font-bold">{{ sortie.campus.nom }}</span>
-            </div>
-            
-            <div>
-                <span>Lieu: </span>
-                <span class="font-bold">{{ sortie.lieu.nom }}</span>
-            </div>
-            
-            <div>
-                <span>Rue: </span>
-                <span class="font-bold">{{ sortie.lieu.rue }}</span>
-            </div>
-            
-            <div>
-                <span>Code postal: </span>
-                <span class="font-bold">{{ sortie.lieu.ville.codePostal }}</span>
-            </div>
-            
-            {% if sortie.lieu.latitude and sortie.lieu.longitude %}
-                <div>
-                    <span>Latitude: </span>
-                    <span class="font-bold">{{ sortie.lieu.latitude }}</span>
-                </div>
-                
-                <div>
-                    <span>Longitude: </span>
-                    <span class="font-bold">{{ sortie.lieu.longitude }}</span>
-                </div>
-            {% endif %}
+        <div class="participants-liste mt-5">
+            <ul>
+                {% for participant in sortie.participants %}
+                    <li>
+                        <span>{{ participant.pseudo }}</span>
+                        <span>{{ participant.prenom }} {{ participant.nom }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
-    </div>
-    <div class="participants-liste">
-        <ul>
-            {% for participant in sortie.participants %}
-                <li>
-                    <span>{{ participant.pseudo }}</span>
-                    <span>{{ participant.prenom }} {{ participant.nom }}</span>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
-    <div class=" mt-3.5">
-        <a class="bg-gray-400 hover:bg-gray-500  text-white font-bold py-2 px-4 rounded" href="{{ path('app_sortie_liste') }}">Retour</a>
-    </div>
+        <div class=" mt-3.5">
+            <a class="bg-gray-400 hover:bg-gray-500  text-white font-bold py-2 px-4 rounded" href="{{ path('app_sortie_liste') }}">Retour</a>
+        </div>
+
+    </section>
+
 
 {% endblock %}
 

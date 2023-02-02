@@ -41,44 +41,44 @@
                     <td class="text-center border-2 border-gray-400">{{ sortie.etat.libelle }}</td>
                     <td class="text-center border-2 border-gray-400">non</td>
                     <td class="text-center border-2 border-gray-400">
-                        <a class="hover:bg-gray-200 rounded" href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a>
+                        <a class="hover:bg-blue-200 rounded" href="{{ path('app_profil_detail',{'id': sortie.organisateur.id}) }}">{{ sortie.organisateur.pseudo }}</a>
                     </td>
                     
                     <td class="text-center border-2 border-gray-400">
                         {% if is_granted('SORTIE_MODIFIER', sortie) %}
                             {# J'ai mis la route vers la liste en attendant la route vers app_sortie_modifier ;)#}
                             <div>
-                                <a class="hover:bg-gray-200 rounded" href="{{ path('app_sortie_liste',{'id' : sortie.id}) }}">Modifier</a>
+                                <a class="hover:bg-blue-200 rounded" href="{{ path('app_sortie_liste',{'id' : sortie.id}) }}">Modifier</a>
                             </div>
                         {% endif %}
                         
                         {% if is_granted('SORTIE_PUBLIER', sortie) %}
                             <div>
-                                <a href="{{ path('app_sortie_publier',{'id' : sortie.id}) }}">Publier</a>
+                                <a class="hover:bg-blue-200 rounded" href="{{ path('app_sortie_publier',{'id' : sortie.id}) }}">Publier</a>
                             </div>
                         {% endif %}
                         
                         {% if is_granted('SORTIE_ANNULER', sortie) %}
                             <div>
-                                <a href="{{ path('app_sortie_annuler',{'id' : sortie.id}) }}">Annuler</a>
+                                <a class="hover:bg-blue-200 rounded" href="{{ path('app_sortie_annuler',{'id' : sortie.id}) }}">Annuler</a>
                             </div>
                         {% endif %}
                         
                         {% if is_granted('SORTIE_AFFICHER', sortie) %}
                             <div>
-                                <a class="hover:bg-gray-200 rounded" href="{{ path('app_sortie_detail',{'id' : sortie.id}) }}">Afficher</a>
+                                <a class="hover:bg-blue-200 rounded" href="{{ path('app_sortie_detail',{'id' : sortie.id}) }}">Afficher</a>
                             </div>
                         {% endif %}
                         
                         {% if is_granted('SORTIE_SINSCRIRE', sortie) %}
                             <div>
-                                <a href="{{ path('app_sortie_sinscrire',{'id' : sortie.id}) }}">s'inscrire</a>
+                                <a class="hover:bg-blue-200 rounded" href="{{ path('app_sortie_sinscrire',{'id' : sortie.id}) }}">s'inscrire</a>
                             </div>
                         {% endif %}
                         
                         {% if is_granted('SORTIE_SE_DESISTER', sortie) %}
                             <div>
-                                <a href="{{ path('app_sortie_sedesister',{'id' : sortie.id}) }}">se désinscrire</a>
+                                <a class="hover:bg-blue-200 rounded" href="{{ path('app_sortie_sedesister',{'id' : sortie.id}) }}">se désinscrire</a>
                             </div>
                         {% endif %}
                     </td>
