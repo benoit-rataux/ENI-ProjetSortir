@@ -17,11 +17,20 @@ class SortieEtatsManager {
         private SortieRepository  $sortieRepository,
         private EtatRepository    $etatRepository,
         private WorkflowInterface $sortieStateMachine,
-    ) {
-    }
+    ) {}
     
     public function creer(Sortie $sortie): void {
+        //@TODO: réflachir à deplacer le code du controler ici
         $this->applyTransition($sortie, Etat::TRANSITION_ETAT_INITIAL);
+    }
+    
+    public function modifier(Sortie $sortie): void {
+        if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_MODIFIER))
+            throw new BLLException('Impossible de modifier la sortie ' . $sortie->getNom());
+        
+        //@TODO! implémenter la BLL
+        
+        $this->applyTransition($sortie, Etat::TRANSITION_MODIFIER);
     }
     
     public function publier(Sortie $sortie): void {
@@ -233,7 +242,7 @@ class SortieEtatsManager {
             printf(
                 'impossible de ' . $transition . ' ' .
                 'la sortie "' . $sortie->getNom() . '" ' .
-                '[' . $sortie->getEtatWorkflow() . "]\n"
+                '[' . $sortie->getEtatWorkflow() . "]\n",
             );
         }
     }

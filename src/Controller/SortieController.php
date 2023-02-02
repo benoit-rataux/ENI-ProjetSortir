@@ -118,20 +118,33 @@ class SortieController extends AbstractController {
         
     }
     
+    #[Route('/modifier/{id}', name: 'modifier', methods: ['GET'])]
+    public function modifier(
+        Sortie             $sortie,
+        SortieEtatsManager $sortieManager,
+    ) {
+        // Controle les droits utilisateurs pour cette action
+        $this->denyAccessUnlessGranted(SortieVoter::MODIFIER, $sortie, 'Dinaaaaaayded !!');
+        
+        $sortieManager->modifier($sortie);
+        
+        $this->addFlash('success', 'Sortie ' . $sortie->getNom() . ' modifiée!');
+        return $this->redirectToRoute('app_main_home');
+    }
     
     #[Route('/publier/{id}', name: 'publier', methods: ['GET'])]
     public function publier(
         int                $id,
         SortieRepository   $sortieRepository,
-        SortieEtatsManager $sortieTransitionsManager,
+        SortieEtatsManager $sortieManager,
     ) {
         $sortie = $sortieRepository->find($id);
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::PUBLIER, $sortie, 'Dinaaaaaayded !!');
         
-        $sortieTransitionsManager->publier($sortie);
+        $sortieManager->publier($sortie);
         
-        $this->addFlash('success', 'Sortie publiée!');
+        $this->addFlash('success', 'Sortie ' . $sortie->getNom() . ' publiée!');
         return $this->redirectToRoute('app_main_home');
     }
     
