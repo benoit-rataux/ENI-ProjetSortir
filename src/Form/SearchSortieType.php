@@ -26,11 +26,11 @@ public function buildForm(FormBuilderInterface $builder, array $options)
         ->add('nomSortie',TextType::class,[
             'label' =>'Le nom de la sortie contient : '
         ])
-        ->add('debutInterval',DateType::class,[
+        ->add('debutIntervalRechercheDateSortie',DateType::class,[
             'html5' => true,
             'widget' => 'single_text',
         ])
-        ->add('finInterval',DateType::class,[
+        ->add('finIntervalRechercheDateSortie',DateType::class,[
             'html5' => true,
             'widget' => 'single_text',
         ])

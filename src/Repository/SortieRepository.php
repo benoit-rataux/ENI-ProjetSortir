@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Campus;
 use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Sortie;
@@ -115,6 +116,14 @@ class SortieRepository extends ServiceEntityRepository {
                     ->getQuery()
                     ->getResult()
         ;
+    }
+
+    public function findAllActiveByCampusName($keyword){
+        $query = $this->createQueryBuilder('p')
+            ->where('p.nom LIKE : key')
+            ->setParameter('key', '%'.$keyword.'%')->getQuery();
+        return $query->getResult();
+
     }
     
     public function save(Sortie $entity, bool $flush = false): void {
