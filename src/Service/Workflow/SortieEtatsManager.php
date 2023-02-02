@@ -25,19 +25,19 @@ class SortieEtatsManager {
         
         $sortie->setCampus($organisateur->getCampus());
         $sortie->setOrganisateur($organisateur);
-        $this->sortieRepository->save($sortie, true);
-        $this->applyTransition($sortie, Etat::TRANSITION_ETAT_INITIAL);
+//        $this->sortieRepository->save($sortie, true);
+        $this->appliquerModifications($sortie, Etat::TRANSITION_ETAT_INITIAL);
     }
     
     public function modifier(Sortie $sortie): void {
         if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_MODIFIER))
             throw new BLLException('Impossible de modifier la sortie ' . $sortie->getNom());
         
-        $this->applyTransition($sortie, Etat::TRANSITION_MODIFIER);
+        $this->appliquerModifications($sortie, Etat::TRANSITION_MODIFIER);
     }
     
     public function publier(Sortie $sortie): void {
-        $this->applyTransition($sortie, Etat::TRANSITION_PUBLIER);
+        $this->appliquerModifications($sortie, Etat::TRANSITION_PUBLIER);
     }
     
     /**
@@ -48,7 +48,7 @@ class SortieEtatsManager {
         $this->updateDataReouvrir();
         $this->updateDataCloturer();
         
-        if($sortie->getEtat()->getLibelle() !== Etat::LABEL_OUVERTE) //TODO: utiliser le workflow
+        if($sortie->getEtat()->getLibelle() !== Etat::LABEL_OUVERTE)
             throw new BLLException("Vous ne pouvez vous inscrire qu'à une sortie dont les inscriptions sont ouvertes !");
         
         if(count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax())
@@ -59,7 +59,7 @@ class SortieEtatsManager {
         
         // ajout du participant
         $sortie->addParticipant($participant);
-        $this->sortieRepository->save($sortie, true);
+//        $this->sortieRepository->save($sortie, true);
         
         // mise à jour de l'état de la sortie
         if(count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax())
@@ -81,7 +81,7 @@ class SortieEtatsManager {
         
         // retrait du participant
         $sortie->removeParticipant($participant);
-        $this->sortieRepository->save($sortie, true);
+//        $this->sortieRepository->save($sortie, true);
         
         // mise à jour de l'état de la sortie
         $this->reouvrir($sortie);
@@ -97,14 +97,14 @@ class SortieEtatsManager {
         if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_ANNULER))
             throw new BLLException("Vous ne pouvez pas annuler la sortie car elle est : " . $sortie->getEtat()->getLibelle());
         
-        $this->applyTransition($sortie, Etat::TRANSITION_ANNULER);
+        $this->appliquerModifications($sortie, Etat::TRANSITION_ANNULER);
     }
     
     public function commencer(Sortie $sortie): void {
         $today = new DateTime();
         
         if($today >= $sortie->getDateHeureDebut())
-            $this->applyTransition($sortie, Etat::TRANSITION_COMMENCER);
+            $this->appliquerModifications($sortie, Etat::TRANSITION_COMMENCER);
     }
     
     public function terminer(Sortie $sortie): void {
@@ -114,7 +114,7 @@ class SortieEtatsManager {
         $dateFin->modify("+$duree minutes");
         
         if($today > $dateFin)
-            $this->applyTransition($sortie, Etat::TRANSITION_TERMINER);
+            $this->appliquerModifications($sortie, Etat::TRANSITION_TERMINER);
     }
     
     public function historiser(Sortie $sortie): void {
@@ -123,7 +123,7 @@ class SortieEtatsManager {
         $dateArchivage->modify('+30 days');
         
         if($today >= $dateArchivage) {
-            $this->applyTransition($sortie, Etat::TRANSITION_ARCHIVER);
+            $this->appliquerModifications($sortie, Etat::TRANSITION_ARCHIVER);
         }
     }
     
@@ -135,7 +135,7 @@ class SortieEtatsManager {
             $today < $sortie->getDateLimiteInscription() &&
             $participantsCount < $sortie->getNbInscriptionsMax()
         ) {
-            $this->applyTransition($sortie, Etat::TRANSITION_REOUVRIR);
+            $this->appliquerModifications($sortie, Etat::TRANSITION_REOUVRIR);
         }
     }
     
@@ -147,7 +147,7 @@ class SortieEtatsManager {
             $today > $sortie->getDateLimiteInscription() ||
             $participantsCount >= $sortie->getNbInscriptionsMax()
         ) {
-            $this->applyTransition($sortie, Etat::TRANSITION_CLOTURER);
+            $this->appliquerModifications($sortie, Etat::TRANSITION_CLOTURER);
         }
     }
     
@@ -221,25 +221,31 @@ class SortieEtatsManager {
     ////////////////////////////////
     
     /**
+     * Applique les changements d'Etat sur la Sortie
+     * et enrregistre les modifications
+     * si la transition est correcte
+     *
      * @param Sortie $sortie
      * @param string $transition
      * @return void
      */
-    private function applyTransition(Sortie $sortie, string $transition): void {
+    private function appliquerModifications(Sortie $sortie, string $transition = Etat::TRANSITION_ETAT_INITIAL): void {
         if($transition === Etat::TRANSITION_ETAT_INITIAL) // met à état initial
             $this->sortieStateMachine->getMarking($sortie);
         
-        $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
         
         try {
-            if($this->sortieStateMachine->can($sortie, $transition))
+            $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
+            
+            if($this->sortieStateMachine->can($sortie, $transition)) {
                 $this->sortieStateMachine->apply($sortie, $transition);
-            
-            $etatLibelle = $sortie->getEtatWorkflow();
-            $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
-            $sortie->setEtat($etat);
-            
-            $this->sortieRepository->save($sortie, true);
+                
+                $etatLibelle = $sortie->getEtatWorkflow();
+                $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
+                $sortie->setEtat($etat);
+                
+                $this->sortieRepository->save($sortie, true);
+            }
         } catch(LogicException $e) {
             printf($e->getMessage());
             printf(
