@@ -103,11 +103,9 @@ class SortieController extends AbstractController {
     
     #[Route('/publier/{id}', name: 'publier', methods: ['GET'])]
     public function publier(
-        int                $id,
-        SortieRepository   $sortieRepository,
+        Sortie             $sortie,
         SortieEtatsManager $sortieManager,
     ) {
-        $sortie = $sortieRepository->find($id);
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::PUBLIER, $sortie, 'Dinaaaaaayded !!');
         
@@ -120,12 +118,10 @@ class SortieController extends AbstractController {
     
     #[Route('/sinscrire/{id}', name: 'sinscrire', methods: ['GET'])]
     public function sinscrire(
-        int                $id,
-        SortieRepository   $sortieRepository,
+        Sortie             $sortie,
         SortieEtatsManager $sortieTransitionsManager,
         UserInterface      $participantConnecte,
     ) {
-        $sortie = $sortieRepository->find($id);
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::SINSCRIRE, $sortie, 'Dinaaaaaayded !!');
         
@@ -150,12 +146,10 @@ class SortieController extends AbstractController {
     
     #[Route('/sedesinscrire/{id}', name: 'sedesister', methods: ['GET'])]
     public function seDesister(
-        int                $id,
-        SortieRepository   $sortieRepository,
+        Sortie             $sortie,
         SortieEtatsManager $sortieTransitionsManager,
         UserInterface      $participantConnecte,
     ) {
-        $sortie = $sortieRepository->find($id);
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::SE_DESISTER, $sortie, 'Dinaaaaaayded !!');
         
@@ -174,12 +168,10 @@ class SortieController extends AbstractController {
     
     #[Route('/annuler/{id}', name: 'annuler', methods: ['GET'])]
     public function annuler(
-        int                $id,
-        SortieRepository   $sortieRepository,
+        Sortie             $sortie,
         SortieEtatsManager $sortieTransitionsManager,
         UserInterface      $participantConnecte,
     ) {
-        $sortie = $sortieRepository->find($id);
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::ANNULER, $sortie, 'Dinaaaaaayded !!');
         
@@ -198,10 +190,8 @@ class SortieController extends AbstractController {
     
     #[Route('/detail/{id}', name: 'detail', methods: ['GET', 'POST'])]
     public function detail(
-        int              $id,
-        SortieRepository $sortieRepository,
+        Sortie $sortie,
     ) {
-        $sortie = $sortieRepository->find($id);
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::AFFICHER, $sortie, 'Dinaaaaaayded !!');
         
