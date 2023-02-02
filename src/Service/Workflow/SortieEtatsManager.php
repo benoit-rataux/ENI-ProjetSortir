@@ -20,7 +20,6 @@ class SortieEtatsManager {
     ) {}
     
     public function creer(Sortie $sortie, Participant $organisateur): void {
-        //@TODO: réflachir à deplacer le code du controler ici
         if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_ETAT_INITIAL))
             throw new BLLException('Impossible de créer la sortie ' . $sortie->getNom());
         
@@ -33,8 +32,6 @@ class SortieEtatsManager {
     public function modifier(Sortie $sortie): void {
         if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_MODIFIER))
             throw new BLLException('Impossible de modifier la sortie ' . $sortie->getNom());
-        
-        //@TODO! implémenter la BLL
         
         $this->applyTransition($sortie, Etat::TRANSITION_MODIFIER);
     }
@@ -51,7 +48,7 @@ class SortieEtatsManager {
         $this->updateDataReouvrir();
         $this->updateDataCloturer();
         
-        if($sortie->getEtat()->getLibelle() !== Etat::LABEL_OUVERTE)
+        if($sortie->getEtat()->getLibelle() !== Etat::LABEL_OUVERTE) //TODO: utiliser le workflow
             throw new BLLException("Vous ne pouvez vous inscrire qu'à une sortie dont les inscriptions sont ouvertes !");
         
         if(count($sortie->getParticipants()) >= $sortie->getNbInscriptionsMax())

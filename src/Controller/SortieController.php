@@ -57,30 +57,47 @@ class SortieController extends AbstractController {
         $villeForm->handleRequest($request);
         
         if($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            $sortieEtatsManager->creer($sortie, $user);
-            
-            $this->addFlash('success', 'Votre sortie a bien été créée');
+            try {
+                $sortieEtatsManager->creer($sortie, $user);
+                $this->addFlash('success', 'Votre sortie a bien été créée');
+            } catch(BLLException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
             return $this->redirectToRoute('app_sortie_liste');
         }
         
         return $this->render('sortie/creerSortie.html.twig', [
             'SortieForm' => $sortieForm->createView(), 'sortie' => $sortie,
         ]);
-        
     }
     
-    #[Route('/modifier/{id}', name: 'modifier', methods: ['GET'])]
+    #[Route('/modifier/{id}', name: 'modifier', methods: ['GET', 'POST'])]
     public function modifier(
+        Request            $request,
         Sortie             $sortie,
-        SortieEtatsManager $sortieManager,
+        SortieEtatsManager $sortieEtatsManager,
     ) {
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::MODIFIER, $sortie, 'Dinaaaaaayded !!');
         
-        $sortieManager->modifier($sortie);
+        $sortieForm = $this->createForm(SortieType::class, $sortie);
+        $sortieForm->handleRequest($request);
+        $villeForm = $this->createForm(VilleType::class,);
+        $villeForm->handleRequest($request);
         
-        $this->addFlash('success', 'Sortie ' . $sortie->getNom() . ' modifiée!');
-        return $this->redirectToRoute('app_main_home');
+        if($sortieForm->isSubmitted() && $sortieForm->isValid()) {
+            try {
+                $sortieEtatsManager->modifier($sortie);
+                $this->addFlash('success', 'Votre sortie a bien été créée');
+            } catch(BLLException $e) {
+                $this->addFlash('error', $e->getMessage());
+            }
+            return $this->redirectToRoute('app_sortie_liste');
+        }
+        
+        return $this->render('sortie/creerSortie.html.twig', [
+            'SortieForm' => $sortieForm->createView(), 'sortie' => $sortie,
+        ]);
     }
     
     #[Route('/publier/{id}', name: 'publier', methods: ['GET'])]
