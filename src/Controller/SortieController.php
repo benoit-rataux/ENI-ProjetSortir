@@ -24,7 +24,7 @@ use Symfony\Component\Workflow\WorkflowInterface;
 
 #[Route('/sortie', name: 'app_sortie_')]
 class SortieController extends AbstractController {
-    #[Route('/liste', name: 'liste',methods: ['GET', 'POST'])]
+    #[Route('/liste', name: 'liste')]
     public function liste(SortieRepository $sortieRepository, UserInterface $user,Request $request): Response {
         /** @var  Participant $user */
         $sorties = $sortieRepository->findAllActiveByCampus($user);
@@ -35,11 +35,7 @@ class SortieController extends AbstractController {
 
         if($searchForm->isSubmitted()){
             $scriteres = $searchForm->getData();
-//            dd($scriteres);
-
-            $sorties = $sortieRepository->findAllActiveByCampusName($search->getCampus()->getNom());
-            return $this->redirectToRoute('app_sortie_liste');
-
+            dd($scriteres);
         }
 
 
@@ -49,8 +45,19 @@ class SortieController extends AbstractController {
         ]);
     }
     
+    #[Route('/listeFiltres', name: 'listeFiltres')]
+    public function listeFiltres(SortieRepository $sortieRepository): Response {
+        $sorties = $sortieRepository->findByOrganisateur();
+        
+        return $this->render('sortie/listeSortie.html.twig', [
+            "sorties" => $sorties,
+        ]);
+    }
 
-
+//    #[Route('/voirDetails/{id}',name: 'voirDetails')]
+//    public function voirDetails($id){
+//
+//    }
     
     #[Route('/creer', name: 'creer', methods: ['GET', 'POST'])]
     public function creerSortie(

@@ -16,6 +16,7 @@ class Etat {
     // déclarés dans /config/packages/workflow.yaml
     public const TRANSITION_ETAT_INITIAL = 'creer';
     public const TRANSITION_MODIFIER     = 'modifier';
+    public const TRANSITION_SUPPRIMER    = 'supprimer';
     public const TRANSITION_PUBLIER      = 'publier';
     public const TRANSITION_CLOTURER     = 'cloturer';
     public const TRANSITION_REOUVRIR     = 'reouvrir';
@@ -42,8 +43,8 @@ class Etat {
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
-        min: 3,
-        max: 50,
+        min       : 3,
+        max       : 50,
         minMessage: 'Le libellé doit contenir au moins {{ limit }} caractères',
         maxMessage: 'Le libellé ne peut excéder {{ limit }} caractères',
     )]
