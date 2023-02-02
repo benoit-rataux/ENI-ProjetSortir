@@ -7,6 +7,7 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Exception\BLLException;
 use App\Repository\EtatRepository;
+use App\Repository\ParticipantRepository;
 use App\Repository\SortieRepository;
 use DateTime;
 use Symfony\Component\Workflow\Exception\LogicException;
@@ -19,8 +20,14 @@ class SortieEtatsManager {
         private WorkflowInterface $sortieStateMachine,
     ) {}
     
-    public function creer(Sortie $sortie): void {
+    public function creer(Sortie $sortie, Participant $organisateur): void {
         //@TODO: réflachir à deplacer le code du controler ici
+        if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_ETAT_INITIAL))
+            throw new BLLException('Impossible de modifier la sortie ' . $sortie->getNom());
+
+        $sortie->setCampus($organisateur->getCampus());
+        $sortie->setOrganisateur($organisateur);
+        $this->sortieRepository->save($sortie, true);
         $this->applyTransition($sortie, Etat::TRANSITION_ETAT_INITIAL);
     }
     

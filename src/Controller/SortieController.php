@@ -61,55 +61,24 @@ class SortieController extends AbstractController {
     
     #[Route('/creer', name: 'creer', methods: ['GET', 'POST'])]
     public function creerSortie(
-        Request                $request,
-        EntityManagerInterface $entityManager,
-        WorkflowInterface      $sortieStateMachine,
-        VilleRepository        $villeRepository,
+        Request $request,
+        UserInterface $user,
+        SortieEtatsManager $sortieEtatsManager,
     
     ): Response {
-        
+
+        /** @var Participant $user */
         $sortie     = new Sortie();
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
-        
-        
-        $villes    = $villeRepository->findAll();
         $villeForm = $this->createForm(VilleType::class,);
         $villeForm->handleRequest($request);
         
         if($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-            
-            $etatCreee = $entityManager->getRepository(Etat::class)->findOneBy(['libelle' => Etat::LABEL_CREEE]);
-            
-            //TODO completer
+            $sortieEtatsManager->creer($sortie,$user);
 
-            //Pas nécessaire mets à zéro dans la bdd !!!
-            /* mettre à zéro le nombre initial d'inscrit pour les sorties
-            $sortie->setNbInscriptionsMax();*/
-
-            //TODO récuperer la liste des villes
-            //$sortie->getLieu()->getVille();
-            //TODO récuperer l'organisateur
-            $organisateur = $entityManager->getRepository(Participant::class)->find($this->getUser()->getId());
-            //TODO récuperer le campus de l'utilisateur
-            $sortie->setCampus($this->getUser()->getCampus());
-            //TODO set le lieu pour tester la création
-
-            // récuperer l'id utilisateur pour définir l'organisateur
-            $sortie->setOrganisateur($organisateur);
-
-            // mettre l'état de la sortie à créer
-            // récuperer l'état créée puis l'affecter à la sortie créée
-            
-            $sortie->setEtat($etatCreee);
-            //$sortieStateMachine->
-            
-            $entityManager->persist($sortie);
-            $entityManager->flush();
-            
             $this->addFlash('success', 'Votre sortie a bien été créée');
             return $this->redirectToRoute('app_sortie_liste');
-            
         }
         
         return $this->render('sortie/creerSortie.html.twig', [
