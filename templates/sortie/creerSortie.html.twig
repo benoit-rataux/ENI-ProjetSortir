@@ -1,27 +1,27 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} {{ parent() }} | Creer une nouvelle sortie {% endblock %}
+{% block title %} Creer une nouvelle sortie {% endblock %}
 
 {% block body %}
     <div class="container">
-
+        
         <h2 class="text-2xl font-bold">Créer une sortie </h2>
-
+        
         <div class="container flex justify-center my-5">
-
+            
             {{ form_start(SortieForm) }}
-
+            
             {{ form_widget(SortieForm) }}
-
+            
             <div class="bg-gray-300 hover:bg-red-300 text-white font-bold py-2 px-4 rounded">
                 <a href="{{ path('app_sortie_liste') }}">Annuler</a>
             </div>
-
+            
             {{ form_end(SortieForm) }}
-
+        
         </div>
-
-
+    
+    
     </div>
 
 
