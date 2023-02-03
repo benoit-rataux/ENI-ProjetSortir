@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} {{ parent() }} | Ajouter un lieu {% endblock %}
+
+{% block body %}
+
+    <div class="container">
+
+        <h2 class="text-2xl font-bold">Ajouter un lieu</h2>
+
+        <div class="container flex justify-center my-5">
+            <div class="container flex justify-center">
+                {{ form_start(lieuForm) }}
+                <div class="container flex justify-center">
+                    <div>
+                        <span class="
+                            px-1
+                            py-1
+                            mb-3
+                            m-0 ">
+
+                            {{ form_row(lieuForm.ville) }}
+                        </span>
+
+                        <span class="
+                            px-1
+                            py-1
+                            mb-3
+                            m-0 ">
+                            {{ form_row(lieuForm.nom) }}
+                        </span>
+
+                        <span class="
+                            px-1
+                            py-1
+                            mb-3
+                            m-0  ">
+                            {{ form_row(lieuForm.rue) }}
+                        </span>
+
+                        <span class="
+                            px-1
+                            py-1
+                            mb-3
+                            m-0  ">
+                            {{ form_row(lieuForm.latitude) }}
+                        </span>
+
+                        <span class=" px-1
+                            py-1
+                            mb-3
+                            m-0  ">
+                            {{ form_row(lieuForm.longitude) }}
+                        </span>
+
+
+
+
+
+
+                    </div>
+
+                </div>
+
+                <div >
+                    <button type="submit" name="enregistrer" value="enregistrer" class="bg-gray-400 hover:bg-blue-700 text-white font-bold py-2 px-4 w-36 mt-1.5 rounded">Enregistrer</button>
+                    <a class="bg-gray-400 hover:bg-red-300 text-white font-bold py-2 px-4 mt-1.5 w-40 rounded" href="{{ path('app_sortie_creer') }}">Annuler</a>
+                </div>
+
+                {{ form_end(lieuForm) }}
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+{% endblock %}
+
+
