@@ -2,16 +2,19 @@
 
 namespace App\Controller;
 
+use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\SearchSortie;
 use App\Entity\Sortie;
 use App\Exception\BLLException;
+use App\Form\LieuType;
 use App\Form\SearchSortieType;
 use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
 use App\Security\Voter\SortieVoter;
 use App\Service\Workflow\SortieEtatsManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,6 +71,24 @@ class SortieController extends AbstractController {
         
         return $this->render('sortie/creerSortie.html.twig', [
             'SortieForm' => $sortieForm->createView(), 'sortie' => $sortie,
+        ]);
+    }
+
+    #[Route('/creerLieu', name:"creerLieu", methods:["GET", "POST"])]
+    public function Lieu(Request $request, EntityManagerInterface $entityManager): Response{
+        $lieu = new Lieu();
+        $lieuForm = $this->createForm(LieuType::class, $lieu);
+        $lieuForm->handleRequest($request);
+
+        if($lieuForm->isSubmitted() && $lieuForm->isValid()) {
+            $entityManager->persist($lieu);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_sortie_creerLieu');
+        }
+
+        return $this->render('sortie/creerLieu.html.twig', [
+            'lieuForm' => $lieuForm->createView()
         ]);
     }
     
