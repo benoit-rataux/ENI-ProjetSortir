@@ -6,7 +6,7 @@ use App\Entity\Lieu;
 use App\Entity\Ville;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,18 +16,25 @@ class LieuType extends AbstractType
     {
         $builder
 
-            ->add('nom')
-            ->add('ville',EntityType::class,[
+            ->add('ville', EntityType::class, [
+                'label' => 'Ville',
                 'class' => Ville::class,
                 'choice_label' => 'nom',
             ])
-            ->add('rue')
-            ->add('latitude')
-            ->add('longitude')
-            ->add('Ajouter un Lieu',SubmitType::class,[
-                'label' => 'Ajouter un Lieu',
-                'attr' => ['class' => 'btn btn-primary'],
+
+            ->add('nom', TextType::class,[
+                'label' => 'Nom',
             ])
+
+            ->add('rue', TextType::class, [
+                'label' => 'Rue',
+            ])
+
+            ->add('latitude',)
+
+            ->add('longitude',)
+
+
         ;
     }
 
