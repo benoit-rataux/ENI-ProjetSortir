@@ -2,6 +2,8 @@
 
 namespace App\Controller;
 
+use App\Entity\Campus;
+use App\Entity\Etat;
 use App\Entity\Lieu;
 use App\Entity\Participant;
 use App\Entity\SearchSortie;
@@ -12,6 +14,7 @@ use App\Form\SearchSortieType;
 use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
+use App\Repository\VilleRepository;
 use App\Security\Voter\SortieVoter;
 use App\Service\Workflow\SortieEtatsManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -20,27 +23,35 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Workflow\WorkflowInterface;
 
 #[Route('/sortie', name: 'app_sortie_')]
 class SortieController extends AbstractController {
     #[Route('/liste', name: 'liste')]
-    public function liste(SortieRepository $sortieRepository, UserInterface $user, Request $request): Response {
+    public function liste(SortieRepository $sortieRepository, UserInterface $user,Request $request): Response {
         /** @var  Participant $user */
         $sorties = $sortieRepository->findAllActiveByCampus($user);
-        
-        $search     = new SearchSortie();
-        $searchForm = $this->createForm(SearchSortieType::class, $search);
+
+        $search = new SearchSortie();
+        $searchForm = $this->createForm(SearchSortieType::class,$search);
         $searchForm->handleRequest($request);
-        
-        if($searchForm->isSubmitted()) {
+
+        if($searchForm->isSubmitted()){
+
+
             $scriteres = $searchForm->getData();
-            dd($scriteres);
+//         $sorties = $sortieRepository->findSortiesByName($search->getNomSortie());
+//            $sorties = $sortieRepository->findByCampus($search->getCampus());
+            $sorties = $sortieRepository->findByIntervalOfDate($search->getDebutInterval(),$search->getFinInterval());
+
+
+
         }
-        
-        
+
+
         return $this->render('sortie/listeSortie.html.twig', [
-            'sorties'    => $sorties,
-            'searchForm' => $searchForm->createView(),
+            'sorties' => $sorties,
+            'searchForm' => $searchForm->createView()
         ]);
     }
     
@@ -51,8 +62,7 @@ class SortieController extends AbstractController {
         SortieEtatsManager $sortieEtatsManager,
     
     ): Response {
-        
-        /** @var Participant $user */
+
         $sortie     = new Sortie();
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
@@ -91,7 +101,7 @@ class SortieController extends AbstractController {
             'lieuForm' => $lieuForm->createView()
         ]);
     }
-    
+
     #[Route('/modifier/{id}', name: 'modifier', methods: ['GET', 'POST'])]
     public function modifier(
         Request            $request,
@@ -114,6 +124,7 @@ class SortieController extends AbstractController {
                 $this->addFlash('error', $e->getMessage());
             }
             return $this->redirectToRoute('app_sortie_liste');
+
         }
         
         return $this->render('sortie/creerSortie.html.twig', [

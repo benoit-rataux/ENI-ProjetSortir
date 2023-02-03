@@ -20,12 +20,9 @@ class SortieEtatsManager {
     ) {}
     
     public function creer(Sortie $sortie, Participant $organisateur): void {
-        if(!$this->sortieStateMachine->can($sortie, Etat::TRANSITION_ETAT_INITIAL))
-            throw new BLLException('Impossible de créer la sortie ' . $sortie->getNom());
-        
         $sortie->setCampus($organisateur->getCampus());
         $sortie->setOrganisateur($organisateur);
-//        $this->sortieRepository->save($sortie, true);
+        
         $this->appliquerModifications($sortie, Etat::TRANSITION_ETAT_INITIAL);
     }
     
@@ -237,22 +234,23 @@ class SortieEtatsManager {
      * @return void
      */
     private function appliquerModifications(Sortie $sortie, string $transition = Etat::TRANSITION_ETAT_INITIAL): void {
-        if($transition === Etat::TRANSITION_ETAT_INITIAL) // met à état initial
+        if($transition === Etat::TRANSITION_ETAT_INITIAL) {
+            // met à état initial
             $this->sortieStateMachine->getMarking($sortie);
-        
+        }
+        else
+            $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
         
         try {
-            $sortie->setEtatWorkflow($sortie->getEtat()->getLibelle());
-            
             if($this->sortieStateMachine->can($sortie, $transition)) {
                 $this->sortieStateMachine->apply($sortie, $transition);
-                
-                $etatLibelle = $sortie->getEtatWorkflow();
-                $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
-                $sortie->setEtat($etat);
-                
-                $this->sortieRepository->save($sortie, true);
             }
+            
+            $etatLibelle = $sortie->getEtatWorkflow();
+            $etat        = $this->etatRepository->findOneBy(['libelle' => $etatLibelle]);
+            $sortie->setEtat($etat);
+            
+            $this->sortieRepository->save($sortie, true);
         } catch(LogicException $e) {
             printf($e->getMessage());
             printf(

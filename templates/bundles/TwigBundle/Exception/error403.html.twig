@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Erreur 403!{% endblock %}
+
+{% block body %}
+    <h2 class="text-2xl font-bold">Erreur 403!</h2>
+    
+    <div class="container flex justify-center my-5">
+        <div>Vous n'avez pas l'authorisation !</div>
+    </div>
+    <div class="container flex justify-center my-5">
+        <div><a href="{{ path('app_main_home') }}">Retour à l'acceuil</a></div>
+    </div>
+
+{% endblock %}
