@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Campus;
 use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\SearchSortie;
@@ -34,8 +35,15 @@ class SortieController extends AbstractController {
         $searchForm->handleRequest($request);
 
         if($searchForm->isSubmitted()){
+
+
             $scriteres = $searchForm->getData();
-            dd($scriteres);
+//         $sorties = $sortieRepository->findSortiesByName($search->getNomSortie());
+//            $sorties = $sortieRepository->findByCampus($search->getCampus());
+            $sorties = $sortieRepository->findByIntervalOfDate($search->getDebutInterval(),$search->getFinInterval());
+
+
+
         }
 
 
@@ -45,14 +53,14 @@ class SortieController extends AbstractController {
         ]);
     }
     
-    #[Route('/listeFiltres', name: 'listeFiltres')]
-    public function listeFiltres(SortieRepository $sortieRepository): Response {
-        $sorties = $sortieRepository->findByOrganisateur();
-        
-        return $this->render('sortie/listeSortie.html.twig', [
-            "sorties" => $sorties,
-        ]);
-    }
+//    #[Route('/listeFiltres', name: 'listeFiltres')]
+//    public function listeFiltres(SortieRepository $sortieRepository): Response {
+//        $sorties = $sortieRepository->findByOrganisateur();
+//
+//        return $this->render('sortie/listeSortie.html.twig', [
+//            "sorties" => $sorties,
+//        ]);
+//    }
 
 //    #[Route('/voirDetails/{id}',name: 'voirDetails')]
 //    public function voirDetails($id){

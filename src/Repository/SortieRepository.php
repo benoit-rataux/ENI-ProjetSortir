@@ -8,6 +8,7 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\EntityManager;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -118,12 +119,35 @@ class SortieRepository extends ServiceEntityRepository {
         ;
     }
 
-    public function findAllActiveByCampusName($keyword){
-        $query = $this->createQueryBuilder('p')
-            ->where('p.nom LIKE : key')
-            ->setParameter('key', '%'.$keyword.'%')->getQuery();
-        return $query->getResult();
+    public function findSortiesByName(string $query){
+       $qb = $this->createQueryBuilder('p');
+       $qb ->where(
+           $qb->expr()->andX(
+               $qb->expr()->orX(
+                   $qb->expr()->like('p.nom',':query'),
+               )
+           )
+       )
+           ->setParameter('query','%'.$query.'%');
+       return $qb->getQuery()->getResult();
+    }
+    public function findByCampus(Campus $campus){
+        return $this->createQueryBuilder('sortie')
+            ->orWhere('sortie.campus = :campusId')
+            ->join('sortie.campus', 'campus')
+            ->setParameter('campusId',$campus)
 
+            ->getQuery()->getResult()
+            ;
+    }
+
+    public function findByIntervalOfDate(\DateTime $beginDate , \DateTime $endDate){
+        return $this->createQueryBuilder('m')
+            ->where('m.dateHeureDebut > ?1')
+            ->andWhere('m.dateHeureDebut < ?2')
+            ->setParameter(1,$beginDate)
+            ->setParameter(2,$endDate)
+            ->getQuery()->getResult();
     }
     
     public function save(Sortie $entity, bool $flush = false): void {

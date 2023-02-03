@@ -3,15 +3,15 @@
 {% block title %}Liste des sorties!{% endblock %}
 
 {% block body %}
+
+
+
     <div class="flex justify-center my-5">
         {{ form_start(searchForm) }}
 
         {{ form_widget(searchForm) }}
 
         <button class="border-2">Rechercher</button>
-
-        Publier la sortie
-        Annuler la création
 
         {{ form_end(searchForm) }}
     </div>
@@ -96,7 +96,7 @@
             <a class="bg-gray-400 hover:bg-gray-500 text-white font-bold ml-1 py-2 px-4 rounded"
                href="{{ path('app_sortie_creer') }}">Créer une sortie</a>
         </div>
-    
+
     </div>
 
 
