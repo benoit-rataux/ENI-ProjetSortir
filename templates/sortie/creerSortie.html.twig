@@ -10,15 +10,47 @@
         <div class="container flex justify-center my-5">
             
             {{ form_start(SortieForm) }}
-            
-            {{ form_widget(SortieForm) }}
-            
-            <div class="bg-gray-300 hover:bg-red-300 text-white font-bold py-2 px-4 rounded">
-                <a href="{{ path('app_sortie_liste') }}">Annuler</a>
+
+            <div class="container flex justify-center">
+
+                <div class="container flex justify-center">
+
+                    <div>
+                        {{ form_row(SortieForm.nom) }}
+                        {{ form_row(SortieForm.dateHeureDebut) }}
+                        {{ form_row(SortieForm.dateLimiteInscription) }}
+                        {{ form_row(SortieForm.nbInscriptionsMax) }}
+                        {{ form_row(SortieForm.duree) }}
+                        {{ form_row(SortieForm.infosSortie) }}
+                    </div>
+
+                </div>
+
+                <div class="container flex justify-center">
+
+                    <div>
+                        {{ form_row(SortieForm.campus) }}
+
+                        {{ form_row(SortieForm.lieu) }}
+
+                        <div id="ajouterLieu">
+                            <a href="{{ path('app_sortie_creerLieu') }}"  class=" text-4xl" >+</a>
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
-            
+
+            <div >
+            <button type="submit" name="enregistrer" value="enregistrer" class="bg-gray-400 hover:bg-blue-700 text-white font-bold py-2 px-4 w-36 mt-1.5 rounded">Enregistrer</button>
+            <button type="submit" name="publier" value="publier" class="bg-gray-400 hover:bg-green-700 text-white font-bold py-2 px-4 w-36 mt-1.5 rounded">Publier</button>
+                    <a class="bg-gray-400 hover:bg-red-300 text-white font-bold py-2 px-4 mt-1.5 w-40 rounded" href="{{ path('app_sortie_liste') }}">Annuler</a>
+            </div>
+
             {{ form_end(SortieForm) }}
-        
+
         </div>
     
     
