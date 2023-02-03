@@ -14,7 +14,6 @@ use App\Form\SearchSortieType;
 use App\Form\SortieType;
 use App\Form\VilleType;
 use App\Repository\SortieRepository;
-use App\Repository\VilleRepository;
 use App\Security\Voter\SortieVoter;
 use App\Service\Workflow\SortieEtatsManager;
 use Doctrine\ORM\EntityManagerInterface;
@@ -23,38 +22,31 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Workflow\WorkflowInterface;
 
 #[Route('/sortie', name: 'app_sortie_')]
 class SortieController extends AbstractController {
     #[Route('/liste', name: 'liste')]
-    public function liste(SortieRepository $sortieRepository, UserInterface $user,Request $request): Response {
+    public function liste(SortieRepository $sortieRepository, UserInterface $user, Request $request): Response {
         /** @var  Participant $user */
         $sorties = $sortieRepository->findAllActiveByCampus($user);
 
-        $search = new SearchSortie();
-        $searchForm = $this->createForm(SearchSortieType::class,$search);
+        $search     = new SearchSortie();
+        $searchForm = $this->createForm(SearchSortieType::class, $search);
         $searchForm->handleRequest($request);
 
-        if($searchForm->isSubmitted()){
-
-
+        if($searchForm->isSubmitted()) {
             $scriteres = $searchForm->getData();
 //         $sorties = $sortieRepository->findSortiesByName($search->getNomSortie());
 //            $sorties = $sortieRepository->findByCampus($search->getCampus());
-            $sorties = $sortieRepository->findByIntervalOfDate($search->getDebutInterval(),$search->getFinInterval());
-
-
-
+            $sorties = $sortieRepository->findByIntervalOfDate($search->getDebutInterval(), $search->getFinInterval());
         }
 
-
         return $this->render('sortie/listeSortie.html.twig', [
-            'sorties' => $sorties,
-            'searchForm' => $searchForm->createView()
+            'sorties'    => $sorties,
+            'searchForm' => $searchForm->createView(),
         ]);
     }
-    
+
     #[Route('/creer', name: 'creer', methods: ['GET', 'POST'])]
     public function creerSortie(
         Request            $request,
@@ -63,6 +55,7 @@ class SortieController extends AbstractController {
     
     ): Response {
 
+        /** @var Participant $user */
         $sortie     = new Sortie();
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
@@ -110,12 +103,12 @@ class SortieController extends AbstractController {
     ) {
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::MODIFIER, $sortie, 'Dinaaaaaayded !!');
-        
+
         $sortieForm = $this->createForm(SortieType::class, $sortie);
         $sortieForm->handleRequest($request);
         $villeForm = $this->createForm(VilleType::class,);
         $villeForm->handleRequest($request);
-        
+
         if($sortieForm->isSubmitted() && $sortieForm->isValid()) {
             try {
                 $sortieEtatsManager->modifier($sortie);
@@ -124,14 +117,9 @@ class SortieController extends AbstractController {
                 $this->addFlash('error', $e->getMessage());
             }
             return $this->redirectToRoute('app_sortie_liste');
-
         }
-        
-        return $this->render('sortie/creerSortie.html.twig', [
-            'SortieForm' => $sortieForm->createView(), 'sortie' => $sortie,
-        ]);
     }
-    
+
     #[Route('/supprimer/{id}', name: 'supprimer', methods: ['GET'])]
     public function supprimer(
         Sortie             $sortie,
@@ -139,14 +127,14 @@ class SortieController extends AbstractController {
     ) {
         // Controle les droits utilisateurs pour cette action
         $this->denyAccessUnlessGranted(SortieVoter::SUPPRIMER, $sortie, 'Dinaaaaaayded !!');
-        
+
         try {
             $sortieEtatsManager->supprimer($sortie);
             $this->addFlash('success', 'Votre sortie "' . $sortie->getNom() . '" a bien été supprimée');
         } catch(BLLException $e) {
             $this->addFlash('error', $e->getMessage());
         }
-        
+
         return $this->redirectToRoute('app_main_home');
     }
     
