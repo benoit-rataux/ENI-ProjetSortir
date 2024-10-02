@@ -39,6 +39,8 @@ class SortieController extends AbstractController {
             $sorties = $sortieRepository->findByIntervalOfDate($search->getDebutInterval(), $search->getFinInterval());
         }
         
+        $sortieRepository->findByNom("mzejezoij");
+        
         return $this->render('sortie/listeSortie.html.twig', [
             'sorties'    => $sorties,
             'searchForm' => $searchForm->createView(),
@@ -118,7 +120,8 @@ class SortieController extends AbstractController {
         }
         
         return $this->render('sortie/modifierSortie.html.twig', [
-            'SortieForm' => $sortieForm->createView(), 'sortie' => $sortie,
+            'SortieForm' => $sortieForm->createView(),
+            'sortie'     => $sortie,
         ]);
     }
     

@@ -36,7 +36,7 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
         $ocean   = $this->getReference(CampusFixtures::REF_PREFIX . '1');
         $lespace = $this->getReference(CampusFixtures::REF_PREFIX . '2');
         
-        $participant = $this->saveUser(
+        $this->generateParticipant(
             $manager,
             'admin',
             'Albus',
@@ -47,9 +47,8 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             '0000000001',
             true,
         );
-        $this->addReference(ParticipantsFixtures::REF_PREFIX . self::$count++, $participant);
         
-        $participant = $this->saveUser(
+        $this->generateParticipant(
             $manager,
             'Garry911',
             'Garry',
@@ -59,9 +58,8 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             'garry911@labretagne.beur',
             '0900000304',
         );
-        $this->addReference(ParticipantsFixtures::REF_PREFIX . self::$count++, $participant);
         
-        $participant = $this->saveUser(
+        $this->generateParticipant(
             $manager,
             'La petite Sirene',
             'Arielle',
@@ -69,9 +67,8 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             $ocean,
             'Arielle7',
         );
-        $this->addReference(ParticipantsFixtures::REF_PREFIX . self::$count++, $participant);
         
-        $participant = $this->saveUser(
+        $this->generateParticipant(
             $manager,
             'Spaaaaaace!',
             'Elon',
@@ -80,17 +77,19 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
             'Spaaaaaac3!',
             'on_est_dans_l_espace@spaaaace.com',
         );
-        $this->addReference(ParticipantsFixtures::REF_PREFIX . self::$count++, $participant);
         
-        while(self::$count < self::NB_MIN_A_GENERER) {
-            $participant = $this->saveUser($manager);
-            $this->addReference(ParticipantsFixtures::REF_PREFIX . self::$count++, $participant);
-        }
+        $this->generateRemaining($manager);
         
         $manager->flush();
     }
     
-    private function saveUser(
+    public function getDependencies() {
+        return [
+            CampusFixtures::class,
+        ];
+    }
+    
+    private function generateParticipant(
         ObjectManager $manager,
         string        $pseudo = null,
         string        $prenom = null,
@@ -110,37 +109,36 @@ class ParticipantsFixtures extends Fixture implements DependentFixtureInterface 
         if($campus == null) {
             $campus = $this->getReference(
                 CampusFixtures::REF_PREFIX .
-                random_int(0, CampusFixtures::$count - 1)
+                random_int(0, CampusFixtures::$count - 1),
             );
         }
         
-        $user = new Participant();
-        $user->setPseudo($pseudo);
-        $user->setPrenom($prenom);
-        $user->setNom($nom);
-        $user->setActif(true);
-        $user->setAdministrateur($isAdmin);
-        $user->setCampus($campus);
-        $user->setMail($mail);
-        $user->setTelephone($telephone);
-        $user->setMotPasse(
+        $participant = new Participant();
+        $participant->setPseudo($pseudo);
+        $participant->setPrenom($prenom);
+        $participant->setNom($nom);
+        $participant->setActif(true);
+        $participant->setAdministrateur($isAdmin);
+        $participant->setCampus($campus);
+        $participant->setMail($mail);
+        $participant->setTelephone($telephone);
+        $participant->setMotPasse(
             $this->userPasswordHasher->hashPassword(
-                $user,
+                $participant,
                 $motPasse,
-            )
+            ),
         );
         
-        $manager->persist($user);
-        $this->addReference('participant_' . $pseudo, $user);
+        $manager->persist($participant);
+        $this->addReference(ParticipantsFixtures::REF_PREFIX . self::$count++, $participant);
         
-        $manager->flush();
-        
-        return $user;
+        return $participant;
     }
     
-    public function getDependencies() {
-        return [
-            CampusFixtures::class,
-        ];
+    private function generateRemaining(ObjectManager $manager) {
+        while(self::$count < self::NB_MIN_A_GENERER) {
+            $participant = $this->generateParticipant($manager);
+            $this->addReference(ParticipantsFixtures::REF_PREFIX . self::$count++, $participant);
+        }
     }
 }

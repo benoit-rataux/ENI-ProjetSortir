@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\Campus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Faker\Factory;
 
 class CampusFixtures extends Fixture {
     
@@ -31,6 +32,19 @@ class CampusFixtures extends Fixture {
         $manager->persist($lespace);
         $this->addReference(self::REF_PREFIX . self::$count++, $lespace);
         
+        $this->generateRemaining($manager);
+        
         $manager->flush();
+    }
+    
+    private function generateRemaining(ObjectManager $manager) {
+        $faker = Factory::create('fr_FR');
+        
+        while(self::$count > self::NB_MIN_A_GENERER) {
+            $campus = new Campus();
+            $campus->setNom('Campus St ' . $faker->unique()->name());
+            $manager->persist($campus);
+            $this->addReference(self::REF_PREFIX . self::$count++, $campus);
+        }
     }
 }

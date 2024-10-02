@@ -28,7 +28,14 @@ class VillesFixtures extends Fixture {
         $manager->persist($ville);
         $this->addReference(self::REF_PREFIX . self::$count++, $ville);
         
-        // some random villes
+        $this->generateRemaining($manager);
+        
+        $manager->flush();
+    }
+    
+    private function generateRemaining(ObjectManager $manager) {
+        $faker = Factory::create('fr_FR');
+        
         while(self::$count < self::NB_MIN_A_GENERER) {
             $ville = new Ville();
             $ville
@@ -38,7 +45,5 @@ class VillesFixtures extends Fixture {
             $manager->persist($ville);
             $this->addReference(self::REF_PREFIX . self::$count++, $ville);
         }
-        
-        $manager->flush();
     }
 }
