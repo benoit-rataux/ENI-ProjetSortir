@@ -4,26 +4,31 @@ namespace App\DataFixtures;
 
 use App\Entity\Etat;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Persistence\ObjectManager;
 
-class EtatFixtures extends Fixture {
+class EtatFixtures extends Fixture implements FixtureGroupInterface {
     
-    private const ETATS = [
-        Etat::LABEL_CREEE      => null,
-        Etat::LABEL_OUVERTE    => null,
-        Etat::LABEL_CLOTUREE   => null,
-        Etat::LABEL_EN_COURS   => null,
-        Etat::LABEL_PASSEE     => null,
-        Etat::LABEL_ANNULEE    => null,
-        Etat::LABEL_HISTORISEE => null,
+    public const ETATS_LABEL = [
+        Etat::LABEL_CREEE,
+        Etat::LABEL_OUVERTE,
+        Etat::LABEL_CLOTUREE,
+        Etat::LABEL_EN_COURS,
+        Etat::LABEL_PASSEE,
+        Etat::LABEL_ANNULEE,
+        Etat::LABEL_HISTORISEE,
     ];
     
+    public static function getGroups(): array {
+        return ['etat', 'sortie'];
+    }
+    
     public function load(ObjectManager $manager): void {
-        foreach(self::ETATS as $key => $value) {
+        foreach(EtatFixtures::ETATS_LABEL as $label) {
             $etat = new Etat();
-            $etat->setLibelle($key);
+            $etat->setLibelle($label);
             $manager->persist($etat);
-            $this->addReference($key, $etat);
+            $this->addReference($label, $etat);
         }
         
         $manager->flush();

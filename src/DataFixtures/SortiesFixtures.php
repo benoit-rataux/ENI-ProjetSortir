@@ -8,112 +8,82 @@ use App\Entity\Participant;
 use App\Entity\Sortie;
 use DateTimeInterface;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\Bundle\FixturesBundle\FixtureGroupInterface;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
-use Faker\Factory;
 
 
-class SortiesFixtures extends Fixture implements DependentFixtureInterface {
+class SortiesFixtures extends Fixture implements DependentFixtureInterface, FixtureGroupInterface {
+    
+    use EntityGeneratorTrait;
     
     ////////// options \\\\\\\\\\\\\
-    private const                 NB_MIN_A_GENERER      = 100;
-    private const                 DATE_MIN              = '-120 days';
-    private const                 DATE_MAX              = '+30 days';
-    private const                 NB_PLACES_MIN         = 1;
-    private const                 NB_PLACES_MAX         = 12;
-    private const                 CHANCES_INSCRITS_ZERO = 0.3;    // float entre 0 et 1
-    private const                 CHANCES_INSCRITS_MAX  = 0.3;    // float entre 0 et 1
+    private const                 MIN_QUANTITY_TO_GENERATE = 10;
+    private const                 DATE_MIN                 = '-120 days';
+    private const                 DATE_MAX                 = '+30 days';
+    private const                 NB_PLACES_MIN            = 1;
+    private const                 NB_PLACES_MAX            = 12;
+    private const                 CHANCES_INSCRITS_ZERO    = 0.3;    // float entre 0 et 1
+    private const                 CHANCES_INSCRITS_MAX     = 0.3;    // float entre 0 et 1
+    
     ////////////////////////////////
     
-    public const REF_PREFIX = Sortie::class . '_';
     
-    
-    public static int $count = 0;
+    public static function getGroups(): array {
+        return ['sortie'];
+    }
     
     public function load(ObjectManager $manager): void {
-        $this->genererSortie(
-            $manager,
-            'super',
+        $this->initialise($manager);
+        
+        $this->generateOne(
+            'sortie de test',
+            null,
+            0,
         );
         
-        $this->generateRemaining($manager);
+        $this->generateRemainings();
         
         $manager->flush();
     }
     
-    public function getDependencies() {
+    public function getDependencies(): array {
         return [
-            VillesFixtures::class,
-            LieuxFixtures::class,
+            VilleFixtures::class,
+            LieuFixtures::class,
             EtatFixtures::class,
+            CampusFixtures::class,
+            ParticipantFixtures::class,
             AppFixtures::class,
         ];
-    }
-    
-    private function generateRemaining(ObjectManager $manager) {
-        while(self::$count++ < self::NB_MIN_A_GENERER) {
-            $this->genererSortie($manager);
-        }
     }
     
     private function inscrireParticipants(
         Sortie $sortie,
         array  $participants = null,
-        int    $nbParticipants = null,
-        float  $chancesZeroParticipants = 0.3,
-        float  $chancesMaxParticipants = 0.3,
     ): Sortie {
         
-        if($participants === null) {
-            // inscription d'un nombre aléatoire de participants
-            if($nbParticipants === null) {
-                $nbParticipantsMaxPossible = min(ParticipantsFixtures::$count - 1, $sortie->getNbInscriptionsMax());
-                
-                $roll = random_int(1, 100);
-                if($roll <= $chancesZeroParticipants)
-                    $nbParticipants = 0;
-                else if($roll >= (1 - $chancesMaxParticipants))
-                    $nbParticipants = min(ParticipantsFixtures::$count - 1, $sortie->getNbInscriptionsMax());
-                else
-                    $nbParticipants = random_int(0, $nbParticipantsMaxPossible);
-            }
-            
-            $nbInscrits = 0;
-            while($nbInscrits < $nbParticipants) {
-                /** @var Participant $participant */
-                $participantIndex = random_int(0, ParticipantsFixtures::$count);
-                $participant      = $this->getReference(ParticipantsFixtures::REF_PREFIX . $participantIndex);
-                
-                if($participants->has($participant))
-                    break;
-                
-                $participants[] = $participant;
-                $nbInscrits++;
-            }
-        }
-        
-        foreach(array_unique($participants) as $participant) {
-            if($participant instanceof Participant)
-                $sortie->addParticipant($participant);
+        foreach($participants as $participant) {
+            /** @var Participant $participant */
+            //$sortie->addParticipant($participant); // @FIXME - fixture: accès aux attributs des autres entity
         }
         
         return $sortie;
     }
     
-    private function filtreEtatsNbParticipants(Sortie $sortie, $etatsPossibles): array {
-        $etatsPossiblesNbParticipants = [];
+    private function etatsPossiblesNbParticipants(Sortie $sortie): array {
         
         $nbParticipants = count($sortie->getParticipants());
         
         if($nbParticipants === 0)
-            $etatsPossiblesNbParticipants = [
+            return [
                 Etat::LABEL_CREEE,
                 Etat::LABEL_OUVERTE,
                 Etat::LABEL_ANNULEE,
             ];
         
         else if($nbParticipants >= $sortie->getNbInscriptionsMax())
-            $etatsPossiblesNbParticipants = [
+            return [
                 Etat::LABEL_CLOTUREE,
                 Etat::LABEL_ANNULEE,
                 Etat::LABEL_EN_COURS,
@@ -122,7 +92,7 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
             ];
         
         else
-            $etatsPossiblesNbParticipants = [
+            return [
                 Etat::LABEL_OUVERTE,
                 Etat::LABEL_CLOTUREE,
                 Etat::LABEL_ANNULEE,
@@ -130,20 +100,14 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
                 Etat::LABEL_PASSEE,
                 Etat::LABEL_HISTORISEE,
             ];
-        
-        $etatsPossibles = array_intersect($etatsPossibles, $etatsPossiblesNbParticipants);
-        
-        return $etatsPossibles;
     }
     
-    private function filtreEtatsDates(Sortie $sortie, array $etatsPossibles) {
-        $etatsPossiblesDates = [];
+    private function etatsPossiblesDates(Sortie $sortie): array {
         
-        $faker = Factory::create('fr_FR');
-        $now   = $faker->dateTime('now');
+        $now = $this->faker->dateTime('now');
         
         if($sortie->getDateLimiteInscription() > $now)
-            $etatsPossiblesDates = [
+            return [
                 Etat::LABEL_CREEE,
                 Etat::LABEL_OUVERTE,
                 Etat::LABEL_CLOTUREE,
@@ -151,39 +115,31 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
             ];
         
         else if($sortie->getDateHeureDebut() > $now)
-            $etatsPossiblesDates = [
+            return [
                 Etat::LABEL_CLOTUREE,
                 Etat::LABEL_ANNULEE,
             ];
         
         else
-            $etatsPossiblesDates = [
+            return [
                 Etat::LABEL_EN_COURS,
                 Etat::LABEL_PASSEE,
                 Etat::LABEL_ANNULEE,
                 Etat::LABEL_HISTORISEE,
             ];
-        
-        $etatsPossibles = array_intersect($etatsPossibles, $etatsPossiblesDates);
-        return $etatsPossibles;
     }
     
-    private function selectionnerEtat(Sortie $sortie): Etat {
-        $etatsPossibles = [
-            Etat::LABEL_CREEE,
-            Etat::LABEL_OUVERTE,
-            Etat::LABEL_CLOTUREE,
-            Etat::LABEL_ANNULEE,
-            Etat::LABEL_EN_COURS,
-            Etat::LABEL_PASSEE,
-            Etat::LABEL_HISTORISEE,
-        ];
+    private function selectionnerEtat(Sortie $sortie): void {
         
         // États possibles en fonction du nombre d'inscrits
-        $this->filtreEtatsNbParticipants($sortie, $etatsPossibles);
+        $etatsPossiblesNombreInscrits = $this->etatsPossiblesNbParticipants($sortie);
         
         // États possibles en fonction de la date
-        $this->filtreEtatsDates($sortie, $etatsPossibles);
+        $etatsPossiblesDates = $this->etatsPossiblesDates($sortie);
+        
+        $etatsPossibles = array_intersect(EtatFixtures::ETATS_LABEL,
+                                          $etatsPossiblesNombreInscrits,
+                                          $etatsPossiblesDates);
         
         $choixEtat = array_rand($etatsPossibles);
         
@@ -191,12 +147,9 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
         $etat = $this->getReference($etatsPossibles[$choixEtat]);
         
         $sortie->setEtat($etat);
-        
-        return $etat;
     }
     
-    private function genererSortie(
-        ObjectManager     $manager,
+    private function generateOne(
         string            $nom = null,
         Participant       $organisateur = null,
         int               $nombrePlaces = null,
@@ -206,57 +159,68 @@ class SortiesFixtures extends Fixture implements DependentFixtureInterface {
         Lieu              $lieu = null,
         string            $infos = null,
         array             $participants = null,
-    ): Sortie {
+    ): void {
+        if($nombrePlaces < SortiesFixtures::NB_PLACES_MIN
+            || $nombrePlaces > SortiesFixtures::NB_PLACES_MAX) {
+            $nombrePlaces = null;
+        }
+        
+        $nom                 ??= $this->faker->unique()->realTextBetween(5, 20);
+        $organisateur        ??= ParticipantFixtures::getOne($this);
+        $nombrePlaces        ??= $this->faker->numberBetween(SortiesFixtures::NB_PLACES_MIN, SortiesFixtures::NB_PLACES_MAX);
+        $dateFinInscriptions ??= $this->faker->dateTimeBetween(SortiesFixtures::DATE_MIN, SortiesFixtures::DATE_MAX);
+        $dateDebut           ??= $this->faker->dateTimeBetween($dateFinInscriptions, SortiesFixtures::DATE_MAX);
+        $duree               ??= $this->faker->numberBetween(1, 16) * 15;
+        $lieu                ??= LieuFixtures::getOne($this);
+        $infos               ??= $this->faker->realTextBetween(20, 600);
+        $participants        ??= $this->generateParticipantList($this->getRandomNumberOfParticipants($nombrePlaces));
+//        $campus              = $organisateur->getCampus(); // @FIXME - fixture: accès aux attributs des autres entity
+        $campus = CampusFixtures::getOne($this);
+        /** @var Participant $organisateur */
+        /** @var Lieu $lieu */
+        
         $sortie = new Sortie();
-        $faker  = Factory::create('fr_FR');
-        
-        if(!$nom) $nom = $faker->unique()->realTextBetween(5, 20);
-        
-        if(!$organisateur) {
-            /** @var Participant $organisateur */
-            $organisateur = $this->getReference(
-                ParticipantsFixtures::REF_PREFIX .
-                random_int(0, ParticipantsFixtures::$count - 1),
-            );
-        }
-        
-        if(!$nombrePlaces) $nombrePlaces = $faker->numberBetween(self::NB_PLACES_MIN, self::NB_PLACES_MAX);
-        
-        if(!$dateFinInscriptions) $dateFinInscriptions = $faker->dateTimeBetween(self::DATE_MIN, self::DATE_MAX);
-        if(!$dateDebut) $dateDebut = $faker->dateTimeBetween($dateFinInscriptions, self::DATE_MAX);
-        
-        if(!$duree) $duree = $faker->numberBetween(1, 16) * 15;
-        
-        if(!$lieu) {
-            /** @var Lieu $lieu */
-            $lieu = $this->getReference(
-                LieuxFixtures::REF_PREFIX .
-                random_int(0, LieuxFixtures::$count - 1),
-            );
-        }
-        
-        $sortie
-            ->setLieu($lieu)
-            ->setNom($nom)
-            ->setOrganisateur($organisateur)
-            ->setCampus($organisateur->getCampus())
-            ->setNbInscriptionsMax($nombrePlaces)
-            ->setDateLimiteInscription($dateFinInscriptions)
-            ->setDateHeureDebut($dateDebut)
-            ->setDuree($duree)
-            ->setInfosSortie($faker->realTextBetween(20, 600))
+        $sortie->setLieu($lieu)
+               ->setNom($nom)
+               ->setOrganisateur($organisateur)
+               ->setCampus($campus)
+               ->setNbInscriptionsMax($nombrePlaces)
+               ->setDateLimiteInscription($dateFinInscriptions)
+               ->setDateHeureDebut($dateDebut)
+               ->setDuree($duree)
+               ->setInfosSortie($infos)
         ;
         
-        $this->inscrireParticipants(
-            $sortie,
-            $participants,
-            self::CHANCES_INSCRITS_ZERO,
-            self::CHANCES_INSCRITS_MAX,
-        );
+        $this->inscrireParticipants($sortie, $participants);
         $this->selectionnerEtat($sortie);
         
-        $manager->persist($sortie);
+        $this->save($sortie);
+    }
+    
+    private function between(float $n, float $min, float $max): bool {
+        return $n >= $min && $n <= $max;
+    }
+    
+    private function getRandomNumberOfParticipants(int $max) {
+        $rng        = mt_rand() / mt_getrandmax();
+        $previous   = 0.;
+        $currentMax = SortiesFixtures::CHANCES_INSCRITS_ZERO;
+        if($this->between($rng, $previous, $currentMax)) return 0;
         
-        return $sortie;
+        $previous   = $currentMax;
+        $currentMax += SortiesFixtures::CHANCES_INSCRITS_MAX;
+        if($this->between($rng, $previous, $currentMax)) return $max;
+        
+        return rand(1, $max - 1);
+    }
+    
+    private function generateParticipantList(int $nombreParticipant): array {
+        $participantList = [];
+        
+        for($i = 0; $i < $nombreParticipant; $i++) {
+            $participantList[] = ParticipantFixtures::getOne($this);
+        }
+        
+        return $participantList;
     }
 }
